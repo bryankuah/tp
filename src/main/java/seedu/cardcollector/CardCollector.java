@@ -37,11 +37,18 @@ public class CardCollector {
                 }
                 handleFind(parts[1]);
                 break;
+            case "remove":
+                if (parts.length < 2) {
+                    System.out.println("Missing index for remove.");
+                    break;
+                }
+                handleRemove(parts[1]);
+                break;
             case "history":
                 handleHistory();
                 break;
             case "bye":
-                ui.printExit(); //
+                ui.printExit();
                 isRunning = false;
                 break;
             default:
@@ -89,6 +96,33 @@ public class CardCollector {
 
         ArrayList<Card> results = inventory.findCards(name, price, quantity);
         ui.printFound(results);
+    }
+
+    private void handleRemove(String argument) {
+        argument = argument.trim();
+
+        try {
+            int index = Integer.parseInt(argument) - 1;
+
+            if (index < 0 || index >= inventory.getSize()) {
+                System.out.println("Invalid card index.");
+                return;
+            }
+
+            inventory.removeCard(index);
+            ui.printRemoved(inventory, index);
+
+        } catch (NumberFormatException e) {
+
+            boolean removed = inventory.removeCardByName(argument);
+
+            if (removed) {
+                System.out.println("Card \"" + argument + "\" removed successfully.");
+                ui.printList(inventory);
+            } else {
+                System.out.println("Card with name \"" + argument + "\" not found.");
+            }
+        }
     }
 
     private void handleHistory() {

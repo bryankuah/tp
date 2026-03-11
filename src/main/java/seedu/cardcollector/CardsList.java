@@ -28,6 +28,17 @@ public class CardsList {
         }
     }
 
+    public boolean removeCardByName(String name) {
+        for (int i = 0; i < inventory.size(); i++) {
+            Card card = inventory.get(i);
+            if (card.getName().equalsIgnoreCase(name)) {
+                inventory.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Card getCard(int index) {
         return inventory.get(index);
     }
