@@ -34,4 +34,24 @@ public class CardsList {
         return inventory.size();
     }
 
+    public ArrayList<Card> findCards(String name, Float price, Integer quantity) {
+        ArrayList<Card> results = new ArrayList<>();
+        for (Card card : inventory) {
+            boolean matches = true;
+            if (name != null && !card.getName().toLowerCase().contains(name.toLowerCase())) {
+                matches = false;
+            }
+            if (price != null && card.getPrice() != price) {
+                matches = false;
+            }
+            if (quantity != null && card.getQuantity() != quantity) {
+                matches = false;
+            }
+            if (matches) {
+                results.add(card);
+            }
+        }
+        return results;
+    }
+
 }

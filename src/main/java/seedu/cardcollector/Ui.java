@@ -1,5 +1,6 @@
 package seedu.cardcollector;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Ui {
@@ -60,6 +61,19 @@ public class Ui {
             System.out.println("Here is your inventory!");
             for (int i = 0; i < inventory.getSize(); i++) {
                 System.out.println((i + 1) + ". " + inventory.getCard(i));
+            }
+        }
+        printBorder();
+    }
+
+    public void printFound(ArrayList<Card> results) {
+        printBorder();
+        if (results.isEmpty()) {
+            System.out.println("No cards found matching your criteria!");
+        } else {
+            System.out.println("Here are the matching cards!");
+            for (int i = 0; i < results.size(); i++) {
+                System.out.println((i + 1) + ". " + results.get(i));
             }
         }
         printBorder();
