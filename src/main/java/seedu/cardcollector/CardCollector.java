@@ -1,4 +1,4 @@
-package seedu.duke;
+package seedu.cardcollector;
 
 public class CardCollector {
     private final Ui ui;

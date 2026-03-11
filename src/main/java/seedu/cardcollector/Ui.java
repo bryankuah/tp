@@ -1,4 +1,4 @@
-package seedu.duke;
+package seedu.cardcollector;
 
 import java.util.Scanner;
 

@@ -14,15 +14,15 @@ Prerequisites: JDK 17 (use the exact version), update Intellij to the most recen
    > Task :processResources NO-SOURCE
    > Task :classes
    
-   > Task :Duke.main()
-   Hello from
-    ____        _        
-   |  _ \ _   _| | _____ 
-   | | | | | | | |/ / _ \
-   | |_| | |_| |   <  __/
-   |____/ \__,_|_|\_\___|
+   > Task :CardCollector.main()
+   Hello I'm
+     ____              _  ____      _ _           _             
+   / ___|__ _ _ __ __| |/ ___|___ | | | ___  ___| |_ ___  _ __
+   | |   / _` | '__/ _` | |   / _ \| | |/ _ \/ __| __/ _ \| '__|
+   | |__| (_| | | | (_| | |__| (_) | | |  __/ (__| || (_) | |   
+   \____\__,_|_|  \__,_|\____\___/|_|_|\___|\___|\__\___/|_|
    
-   What is your name?
+   What can I do for you?
    ```
    Type some word and press enter to let the execution proceed to the end.
 
@@ -41,7 +41,7 @@ Prerequisites: JDK 17 (use the exact version), update Intellij to the most recen
 
 ### JUnit tests
 
-* A skeleton JUnit test (`src/test/java/seedu/duke/DukeTest.java`) is provided with this project template. 
+* A skeleton JUnit test (`src/test/java/seedu/cardcollector/CardCollectorTest.java`) is provided with this project template. 
 * If you are new to JUnit, refer to the [JUnit Tutorial at se-education.org/guides](https://se-education.org/guides/tutorials/junit.html).
 
 ## Checkstyle

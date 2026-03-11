@@ -1,4 +1,4 @@
-package seedu.duke;
+package seedu.cardcollector;
 
 public class Card {
     protected String name;
