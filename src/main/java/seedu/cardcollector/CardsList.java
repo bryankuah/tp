@@ -11,7 +11,7 @@ public class CardsList {
 
     public void addCard(Card card) {
         if (card == null) {
-            System.out.println("seedu.duke.Card not found!");
+            System.out.println("seedu.cardcollector.Card not found!");
         }
         inventory.add(card);
     }

@@ -1,4 +1,4 @@
-# Duke
+# CardCollector
 
 {Give product intro here}
 
