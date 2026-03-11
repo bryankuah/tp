@@ -49,6 +49,10 @@ public class CardCollector {
                 handleRemove(parts[1]);
                 break;
 
+            case "list":
+                ui.printList(inventory);
+                break;
+
             case "history":
                 if (parts.length < 2) {
                     System.out.println("Usage: history [added|modified|removed]");
