@@ -1,8 +1,6 @@
 package seedu.cardcollector;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.stream.Collectors;
 
 public class CardsList {
     private final ArrayList<Card> inventory;
@@ -32,6 +30,10 @@ public class CardsList {
         return inventory.get(index);
     }
 
+    public ArrayList<Card> getCards() {
+        return inventory;
+    }
+
     public int getSize () {
         return inventory.size();
     }
@@ -54,11 +56,5 @@ public class CardsList {
             }
         }
         return results;
-    }
-
-    public ArrayList<Card> getCardsSortedByLastAdded() {
-        return inventory.stream()
-                .sorted(Comparator.comparing(Card::getLastAdded).reversed())
-                .collect(Collectors.toCollection(ArrayList::new));
     }
 }

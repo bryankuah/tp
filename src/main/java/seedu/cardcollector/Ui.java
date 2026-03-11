@@ -4,13 +4,20 @@ import java.time.format.DateTimeFormatter;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.AbstractMap;
 import java.util.Scanner;
+import java.util.stream.*;
 
 public class Ui {
-    private Scanner scanner;
+    private final Scanner scanner;
+    private final DateTimeFormatter dateTimeFormatter;
 
     public Ui() {
         this.scanner = new Scanner(System.in);
+        this.dateTimeFormatter = DateTimeFormatter
+                .ofPattern("yyyy-MM-dd HH:mm:ss")
+                .withZone(ZoneId.systemDefault());
     }
 
     public void printBorder() {
@@ -82,20 +89,73 @@ public class Ui {
         printBorder();
     }
 
-    public void printAddedHistory(ArrayList<Card> sortedCards) {
+    public void printAddedHistory(CardsList inventory) {
         printBorder();
+
+        // Sorts the cards according to last added date
+        ArrayList<Card> sortedCards = inventory.getCards().stream()
+                .sorted(Comparator.comparing(Card::getLastAdded))
+                .collect(Collectors.toCollection(ArrayList::new));
+
+
         if (sortedCards.isEmpty()) {
-            System.out.println("No history found!");
+            System.out.println("No history for cards added found!");
         } else {
-            System.out.println("Here is the history!");
+            System.out.println("Here is the history for cards last added!");
+
             for (Card card: sortedCards) {
                 Instant lastAdded = card.getLastAdded();
+                String dateString = dateTimeFormatter.format(lastAdded);
 
-                DateTimeFormatter formatter = DateTimeFormatter
-                        .ofPattern("yyyy-MM-dd HH:mm:ss")
-                        .withZone(ZoneId.systemDefault());
-                String dateString = formatter.format(lastAdded);
-                System.out.println(dateString + " " + card);
+                System.out.println(dateString + " added -> " + card);
+            }
+        }
+        printBorder();
+    }
+
+    public void printModifiedHistory(CardsList inventory) {
+        printBorder();
+
+        // Sorts the cards according to last modified date
+        ArrayList<Card> sortedCards = inventory.getCards().stream()
+                .sorted(Comparator.comparing(Card::getLastModified))
+                .collect(Collectors.toCollection(ArrayList::new));
+
+
+        if (sortedCards.isEmpty()) {
+            System.out.println("No history for cards modified found!");
+        } else {
+            System.out.println("Here is the history for cards last modified!");
+
+            for (Card card: sortedCards) {
+                Instant lastModified = card.getLastModified();
+                String dateString = dateTimeFormatter.format(lastModified);
+
+                System.out.println(dateString + " modified -> " + card);
+            }
+        }
+        printBorder();
+    }
+
+    public void printRemovedHistory(CardsList removedInventory) {
+        printBorder();
+
+        // Sorts the removed cards according to last added date
+        ArrayList<Card> sortedCards = removedInventory.getCards().stream()
+                .sorted(Comparator.comparing(Card::getLastModified))
+                .collect(Collectors.toCollection(ArrayList::new));
+
+
+        if (sortedCards.isEmpty()) {
+            System.out.println("No history for cards removed found!");
+        } else {
+            System.out.println("Here is the history for cards last removed!");
+
+            for (Card card: sortedCards) {
+                Instant lastModified = card.getLastModified();
+                String dateString = dateTimeFormatter.format(lastModified);
+
+                System.out.println(dateString + " removed -> " + card);
             }
         }
         printBorder();
