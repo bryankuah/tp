@@ -180,14 +180,14 @@ public class Ui {
         printBorder();
     }
 
-    public void printRemovedHistory(CardsList removedInventory, boolean showAll) {
+    public void printRemovedHistory(CardsList inventory, boolean showAll) {
         printBorder();
 
-        int recordsLength = removedInventory.getSize();
-        int recordsLimit = showAll ? removedInventory.getSize() : HISTORY_DISPLAY_RECORDS_LIMIT;
+        int recordsLength = inventory.getRemovedSize();
+        int recordsLimit = showAll ? inventory.getRemovedSize() : HISTORY_DISPLAY_RECORDS_LIMIT;
 
         // Sorts the removed cards according to last added date
-        ArrayList<Card> sortedCards = removedInventory.getCards().stream()
+        ArrayList<Card> sortedCards = inventory.getRemovedCards().stream()
                 .sorted(Comparator.comparing(Card::getLastModified).reversed())
                 .limit(recordsLimit)
                 .collect(Collectors.toCollection(ArrayList::new));

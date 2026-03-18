@@ -1,17 +1,14 @@
 package seedu.cardcollector;
 
-import java.time.Instant;
 import java.util.ArrayList;
 
 public class CardCollector {
     private final Ui ui;
     private final CardsList inventory;
-    private final CardsList removedInventory;
 
     public CardCollector() {
         ui = new Ui();
         inventory = new CardsList();
-        removedInventory = new CardsList();
     }
 
     public void run() {
@@ -88,8 +85,7 @@ public class CardCollector {
         assert quantity >= 0 : "Card quantity should not be negative";
         assert price >= 0.0f : "Card price should not be negative";
 
-        Instant currentInstant = Instant.now();
-        Card newCard = new Card(name, quantity, price, currentInstant, currentInstant);
+        Card newCard = new Card(name, quantity, price);
 
         int sizeBefore = inventory.getSize();
         inventory.addCard(newCard);
@@ -177,7 +173,7 @@ public class CardCollector {
         } else if ("modified".startsWith(arguments)) {
             ui.printModifiedHistory(inventory, false);
         } else if ("removed".startsWith(arguments)) {
-            ui.printRemovedHistory(removedInventory, false);
+            ui.printRemovedHistory(inventory, false);
         } else {
             System.out.println("Unknown argument!");
         }

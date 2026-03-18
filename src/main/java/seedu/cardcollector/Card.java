@@ -6,15 +6,13 @@ public class Card {
     private String name;
     private int quantity;
     private float price;
-    private Instant lastAdded;
-    private Instant lastModified;
+    private Instant lastAdded = null;
+    private Instant lastModified = null;
 
-    public Card (String name, int quantity, float price, Instant lastAdded, Instant lastEdited) {
+    public Card (String name, int quantity, float price) {
         this.name = name;
         this.quantity = quantity;
         this.price = price;
-        this.lastAdded = lastAdded;
-        this.lastModified = lastEdited;
     }
 
     public String getName() {
