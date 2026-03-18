@@ -8,6 +8,11 @@
 
 {Describe the design and implementation of the product. Use UML diagrams and short code snippets where applicable.}
 
+The architecture of CardCollector consists of three main components:
+1. **`Ui`**: Handles all interactions with the user (reading input and printing formatted output).
+2. **`CardCollector`**: The main logic controller that parses user input and executes the appropriate commands.
+3. **`CardsList` & `Card`**: The data structures storing the inventory and individual card details, including timestamp history.
+
 
 ## Product scope
 ### Target user profile
