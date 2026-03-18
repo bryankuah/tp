@@ -95,6 +95,9 @@ public class Ui {
     }
 
     public void printFound(ArrayList<Card> results) {
+        // Precondition: Results must exist before attempting to display them
+        assert results != null : "Results list passed to Ui should not be null";
+
         printBorder();
         if (results.isEmpty()) {
             System.out.println("No cards found matching your criteria!");
