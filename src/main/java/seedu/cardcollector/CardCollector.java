@@ -51,7 +51,11 @@ public class CardCollector {
                 break;
 
             case "list":
+                assert inventory != null : "Inventory should be initialised before listing";
+                int sizeBeforeListing = inventory.getSize();
                 ui.printList(inventory);
+                assert inventory.getSize() == sizeBeforeListing
+                        : "Listing inventory should not modify its size";
                 break;
 
             case "history":
