@@ -85,7 +85,11 @@ public class CardCollector {
         assert quantity >= 0 : "Card quantity should not be negative";
         assert price >= 0.0f : "Card price should not be negative";
 
-        Card newCard = new Card(name, quantity, price);
+        Card newCard = new Card.Builder()
+                .name(name)
+                .price(price)
+                .quantity(quantity)
+                .build();
 
         int sizeBefore = inventory.getSize();
         inventory.addCard(newCard);
