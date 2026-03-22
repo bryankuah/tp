@@ -32,6 +32,33 @@ public class Parser {
         }
     }
 
+    private static int getMaxDisplayCount(String[] split, String[] usage) throws ParseInvalidArgumentException {
+        int maxDisplayCount = -1;
+
+        if (split.length <= 1) {
+            return maxDisplayCount;
+        }
+
+        String maxDisplayCountString = split[1];
+        try {
+            int i = Integer.parseInt(maxDisplayCountString);
+
+            if (i < 1) {
+                throw new ParseInvalidArgumentException("Display count must be at least 1", usage);
+            }
+
+            maxDisplayCount = i;
+        } catch (NumberFormatException e) {
+            if ("all".startsWith(maxDisplayCountString)) {
+                maxDisplayCount = Integer.MAX_VALUE;
+            } else {
+                throw new ParseInvalidArgumentException("Display count invalid", usage);
+            }
+        }
+
+        return maxDisplayCount;
+    }
+
     /**
      * Handles the "history" command by displaying different types of inventory change history.
      * The format of the argument is [added | modified | removed] [NUMBER | all]
@@ -47,30 +74,11 @@ public class Parser {
         }
 
         String lowercaseArguments = arguments.trim().toLowerCase();
-        String[] split = lowercaseArguments.split("\\s+", 2);  // Split by one or more spaces
+        String[] split = lowercaseArguments.split(REGEX_WHITESPACES, 2);  // Split by one or more spaces
 
         String historyType = split[0];
 
-        int maxDisplayCount = -1;
-
-        if (split.length > 1) {
-            String maxDisplayCountString = split[1];
-            try {
-                int i = Integer.parseInt(maxDisplayCountString);
-
-                if (i < 1) {
-                    throw new ParseInvalidArgumentException("History count must be at least 1", USAGE_HISTORY_COMMAND);
-                }
-
-                maxDisplayCount = i;
-            } catch (NumberFormatException e) {
-                if ("all".startsWith(maxDisplayCountString)) {
-                    maxDisplayCount = Integer.MAX_VALUE;
-                } else {
-                    throw new ParseInvalidArgumentException("History count invalid", USAGE_HISTORY_COMMAND);
-                }
-            }
-        }
+        int maxDisplayCount = getMaxDisplayCount(split, USAGE_HISTORY_COMMAND);
 
         if (CardHistoryType.ADDED.getName().startsWith(historyType)) {
             return new HistoryCommand(CardHistoryType.ADDED, maxDisplayCount);
