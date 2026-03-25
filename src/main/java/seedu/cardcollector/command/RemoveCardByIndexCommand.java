@@ -13,7 +13,7 @@ public class RemoveCardByIndexCommand extends Command {
     @Override
     public CommandResult execute(Ui ui, CardsList inventory) {
         if (targetIndex < 0 || targetIndex >= inventory.getSize()) {
-            System.out.println("Invalid card index.");
+            ui.printInvalidIndex();
             return new CommandResult(false);
         }
         inventory.removeCardByIndex(targetIndex);

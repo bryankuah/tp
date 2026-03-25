@@ -2,10 +2,13 @@ package seedu.cardcollector.parsing;
 
 import seedu.cardcollector.CardHistoryType;
 import seedu.cardcollector.command.AddCommand;
-import seedu.cardcollector.command.RemoveCardByNameCommand;
-import seedu.cardcollector.command.RemoveCardByIndexCommand;
 import seedu.cardcollector.command.Command;
+import seedu.cardcollector.command.ExitCommand;
+import seedu.cardcollector.command.FindCommand;
 import seedu.cardcollector.command.HistoryCommand;
+import seedu.cardcollector.command.ListCommand;
+import seedu.cardcollector.command.RemoveCardByIndexCommand;
+import seedu.cardcollector.command.RemoveCardByNameCommand;
 import seedu.cardcollector.exception.ParseInvalidArgumentException;
 import seedu.cardcollector.exception.ParseUnknownCommandException;
 
@@ -18,34 +21,49 @@ public class Parser {
     private static final String KEYWORD_ADD_COMMAND = "add";
     private static final String KEYWORD_REMOVE_INDEX_COMMAND = "removeindex";
     private static final String KEYWORD_REMOVE_NAME_COMMAND = "removename";
+    private static final String KEYWORD_FIND_COMMAND = "find";
+    private static final String KEYWORD_LIST_COMMAND = "list";
+    private static final String KEYWORD_EXIT_COMMAND = "bye";
 
     private static final String[] USAGE_HISTORY_COMMAND = {
         "history [added | modified | removed] [NUMBER | all]",
         "history added"
     };
 
-    public Command parse(String input) throws
-            ParseUnknownCommandException,
-            ParseInvalidArgumentException {
-        // Split by one or more spaces
-        String[] parts = input.split(REGEX_WHITESPACES, 2);
+    private static final String[] USAGE_FIND_COMMAND = {
+        "find [/n NAME] [/p PRICE] [/q QUANTITY]",
+        "find /n Pikachu",
+        "find /p 12.5",
+        "find /n Pikachu /q 3"
+    };
+
+    public Command parse(String input) throws ParseUnknownCommandException, ParseInvalidArgumentException {
+        String trimmedInput = input.trim();
+        if (trimmedInput.isEmpty()) {
+            throw new ParseUnknownCommandException("");
+        }
+
+        String[] parts = trimmedInput.split(REGEX_WHITESPACES, 2);
         String commandKeyword = parts[0].toLowerCase();
         String arguments = parts.length > 1 ? parts[1] : "";
 
         switch (commandKeyword) {
-        case KEYWORD_HISTORY_COMMAND -> {
+        case KEYWORD_HISTORY_COMMAND:
             return handleHistory(arguments);
-        }
-        case KEYWORD_ADD_COMMAND -> {
+        case KEYWORD_ADD_COMMAND:
             return handleAdd(arguments);
-        }
-        case KEYWORD_REMOVE_INDEX_COMMAND -> {
+        case KEYWORD_REMOVE_INDEX_COMMAND:
             return handleRemoveByIndex(arguments);
-        }
-        case KEYWORD_REMOVE_NAME_COMMAND -> {
+        case KEYWORD_REMOVE_NAME_COMMAND:
             return handleRemoveByName(arguments);
-        }
-        default -> throw new ParseUnknownCommandException(commandKeyword);
+        case KEYWORD_FIND_COMMAND:
+            return handleFind(arguments);
+        case KEYWORD_LIST_COMMAND:
+            return handleList(arguments);
+        case KEYWORD_EXIT_COMMAND:
+            return handleExit(arguments);
+        default:
+            throw new ParseUnknownCommandException(commandKeyword);
         }
     }
 
@@ -76,7 +94,7 @@ public class Parser {
         return maxDisplayCount;
     }
 
-    private Command handleAdd(String args) throws ParseInvalidArgumentException{
+    private Command handleAdd(String args) throws ParseInvalidArgumentException {
         try {
             String name = args.split("/n")[1].split("/q|/p|/id")[0].trim();
             int quantity = Integer.parseInt(args.split("/q")[1].split("/n|/p|/id")[0].trim());
@@ -87,10 +105,12 @@ public class Parser {
                 String uidString = args.split("/id")[1].split("/n|/q|/p")[0].trim();
                 uid = UUID.fromString(uidString);
             }
-            return new AddCommand(uid,name,quantity,price);
+            return new AddCommand(uid, name, quantity, price);
         } catch (Exception e) {
-            throw new ParseInvalidArgumentException("Invalid add format",
-                    new String[] {"add /n NAME /q QTY /p PRICE [/id UUID]"});
+            throw new ParseInvalidArgumentException(
+                    "Invalid add format",
+                    new String[] {"add /n NAME /q QTY /p PRICE [/id UUID]"}
+            );
         }
     }
 
@@ -99,17 +119,88 @@ public class Parser {
             int index = Integer.parseInt(args.trim()) - 1;
             return new RemoveCardByIndexCommand(index);
         } catch (NumberFormatException e) {
-            throw new ParseInvalidArgumentException("Index must be a valid integer",
-                    new String[]{"removeindex INDEX"});
+            throw new ParseInvalidArgumentException(
+                    "Index must be a valid integer",
+                    new String[] {"removeindex INDEX"}
+            );
         }
     }
 
     private Command handleRemoveByName(String args) throws ParseInvalidArgumentException {
         if (args.isBlank()) {
-            throw new ParseInvalidArgumentException("Name must be provided",
-                    new String[]{"removename NAME"});
+            throw new ParseInvalidArgumentException(
+                    "Name must be provided",
+                    new String[] {"removename NAME"}
+            );
         }
         return new RemoveCardByNameCommand(args.trim());
+    }
+
+    private Command handleFind(String arguments) throws ParseInvalidArgumentException {
+        if (arguments.isBlank()) {
+            throw new ParseInvalidArgumentException(
+                    "At least one search field must be provided",
+                    USAGE_FIND_COMMAND
+            );
+        }
+
+        String name = null;
+        Float price = null;
+        Integer quantity = null;
+
+        try {
+            if (arguments.contains("/n")) {
+                name = arguments.split("/n")[1].split("/q|/p")[0].trim();
+                if (name.isEmpty()) {
+                    name = null;
+                }
+            }
+            if (arguments.contains("/q")) {
+                quantity = Integer.parseInt(arguments.split("/q")[1].split("/n|/p")[0].trim());
+            }
+            if (arguments.contains("/p")) {
+                price = Float.parseFloat(arguments.split("/p")[1].split("/n|/q")[0].trim());
+            }
+        } catch (NumberFormatException e) {
+            throw new ParseInvalidArgumentException(
+                    "Invalid number format for price or quantity",
+                    USAGE_FIND_COMMAND
+            );
+        } catch (Exception e) {
+            throw new ParseInvalidArgumentException(
+                    "Invalid find format",
+                    USAGE_FIND_COMMAND
+            );
+        }
+
+        if (name == null && price == null && quantity == null) {
+            throw new ParseInvalidArgumentException(
+                    "At least one search field (/n, /p, /q) must be provided",
+                    USAGE_FIND_COMMAND
+            );
+        }
+
+        return new FindCommand(name, price, quantity);
+    }
+
+    private Command handleList(String arguments) throws ParseInvalidArgumentException {
+        if (!arguments.isBlank()) {
+            throw new ParseInvalidArgumentException(
+                    "list does not take any arguments",
+                    new String[] {"list"}
+            );
+        }
+        return new ListCommand();
+    }
+
+    private Command handleExit(String arguments) throws ParseInvalidArgumentException {
+        if (!arguments.isBlank()) {
+            throw new ParseInvalidArgumentException(
+                    "bye does not take any arguments",
+                    new String[] {"bye"}
+            );
+        }
+        return new ExitCommand();
     }
 
     /**
@@ -127,7 +218,7 @@ public class Parser {
         }
 
         String lowercaseArguments = arguments.trim().toLowerCase();
-        String[] split = lowercaseArguments.split(REGEX_WHITESPACES, 2);  // Split by one or more spaces
+        String[] split = lowercaseArguments.split(REGEX_WHITESPACES, 2);
 
         String historyType = split[0];
 

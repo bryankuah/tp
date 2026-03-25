@@ -15,8 +15,11 @@ public class RemoveCardByNameCommand extends Command {
         boolean removed = inventory.removeCardByName(targetName);
 
         if (removed) {
-            System.out.println("Card \"" + targetName + "\" removed successfully");
+            ui.printRemoveByNameSuccess(targetName, inventory);
+        } else {
+            ui.printCardNotFound(targetName);
         }
+
         return new CommandResult(false);
     }
 }
