@@ -26,15 +26,15 @@ public class Parser {
     private static final String KEYWORD_EXIT_COMMAND = "bye";
 
     private static final String[] USAGE_HISTORY_COMMAND = {
-            "history [added | modified | removed] [NUMBER | all]",
-            "history added"
+        "history [added | modified | removed] [NUMBER | all]",
+        "history added"
     };
 
     private static final String[] USAGE_FIND_COMMAND = {
-            "find [/n NAME] [/p PRICE] [/q QUANTITY]",
-            "find /n Pikachu",
-            "find /p 12.5",
-            "find /n Pikachu /q 3"
+        "find [/n NAME] [/p PRICE] [/q QUANTITY]",
+        "find /n Pikachu",
+        "find /p 12.5",
+        "find /n Pikachu /q 3"
     };
 
     public Command parse(String input) throws ParseUnknownCommandException, ParseInvalidArgumentException {
