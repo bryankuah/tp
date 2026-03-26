@@ -95,6 +95,15 @@ public class Parser {
     }
 
     private Command handleAdd(String args) throws ParseInvalidArgumentException {
+        assert args != null : "Arguements passed should not be null";
+
+        if (!args.contains("/n") || !args.contains("/q") || !args.contains("/p")) {
+            throw new ParseInvalidArgumentException(
+                    "Missing required flags (/n /q /p)",
+                    new String[]{"add /n NAME /q QTY /p PRICE"}
+            );
+        }
+
         try {
             String name = args.split("/n")[1].split("/q|/p|/id")[0].trim();
             int quantity = Integer.parseInt(args.split("/q")[1].split("/n|/p|/id")[0].trim());
@@ -106,10 +115,15 @@ public class Parser {
                 uid = UUID.fromString(uidString);
             }
             return new AddCommand(uid, name, quantity, price);
+        } catch (NumberFormatException e) {
+            throw new ParseInvalidArgumentException(
+                    "Quantity must be an integer and price must be float",
+                    new String[]{"add /n NAME /q QTY /p PRICE"}
+            );
         } catch (Exception e) {
             throw new ParseInvalidArgumentException(
                     "Invalid add format",
-                    new String[] {"add /n NAME /q QTY /p PRICE [/id UUID]"}
+                    new String[]{"add /n NAME /q QTY /p PRICE [/id UUID]"}
             );
         }
     }

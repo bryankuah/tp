@@ -22,6 +22,8 @@ public class CardsList {
             return;
         }
 
+        assert newCard != null : "new card added should not be null";
+
         Instant currentInstant = Instant.now();
 
         for (Card existingCard : cards) {
