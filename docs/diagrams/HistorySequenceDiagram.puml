@@ -3,51 +3,47 @@
 
 participant ":CardCollector" as CardCollector CARDCOLLECTOR_COLOR_PRIMARY
 participant ":Parser" as Parser PARSER_COLOR_PRIMARY
-participant ":DeleteCommand" as DeleteCommand COMMAND_COLOR_PRIMARY
+participant ":HistoryCommand" as HistoryCommand COMMAND_COLOR_PRIMARY
 participant ":Ui" as Ui UI_COLOR_PRIMARY
 
-create Parser
-CardCollector -> Parser:
-activate Parser
 CardCollector -> Parser : parse("history added all")
+activate Parser
 
-create DeleteCommand
-Parser -> DeleteCommand
-activate DeleteCommand
-DeleteCommand --> Parser : command
-deactivate DeleteCommand
+create HistoryCommand
+Parser -> HistoryCommand
+activate HistoryCommand
+HistoryCommand --> Parser : command
+deactivate HistoryCommand
 
 Parser --> CardCollector : command
 deactivate Parser
 CardCollector -[hidden]-> Parser
-destroy Parser
-CardCollector -[hidden]-> Parser
 
 'We are done with the parser, lets execute the command'
-CardCollector -> DeleteCommand : execute()
-activate DeleteCommand
+CardCollector -> HistoryCommand : execute(...)
+activate HistoryCommand
 
 alt #fafafa CardHistoryType.ADDED
-    DeleteCommand -> Ui: printAddedHistory(...)
+    HistoryCommand -> Ui: printAddedHistory(...)
     activate Ui
-    Ui --> DeleteCommand
+    Ui --> HistoryCommand
     deactivate Ui
 else CardHistoryType.MODIFIED
-    DeleteCommand -> Ui: printModifiedHistory(...)
+    HistoryCommand -> Ui: printModifiedHistory(...)
     activate Ui
-    Ui --> DeleteCommand
+    Ui --> HistoryCommand
     deactivate Ui
 else CardHistoryType.Removed
-    DeleteCommand -> Ui: printRemovedHistory(...)
+    HistoryCommand -> Ui: printRemovedHistory(...)
     activate Ui
-    Ui --> DeleteCommand
+    Ui --> HistoryCommand
     deactivate Ui
 end
 
-DeleteCommand --> CardCollector : commandResult
-deactivate DeleteCommand
+HistoryCommand --> CardCollector : commandResult
+deactivate HistoryCommand
 CardCollector -[hidden]-> Parser
-destroy DeleteCommand
+destroy HistoryCommand
 @enduml
 
 

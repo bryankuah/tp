@@ -18,6 +18,8 @@ The architecture of CardCollector consists of three main components:
 To model the interactions that occur when the user issues the command `history added all`, below is a *Sequence Diagram* to illustrate it.
 <img src="images/HistorySequenceDiagram.svg" width="550" />
 
+**Note:** The lifeline for `HistoryCommand` actually ends at the destroy marker (X), but due to a limitation in PlantUML, the dotted lifeline continues downwards.
+
 ## Product scope
 ### Target user profile
 
