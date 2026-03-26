@@ -12,6 +12,10 @@ public class Card {
     private Instant lastModified = null;
 
     public Card (Builder builder) {
+        assert builder != null : "builder cannot be null";
+        assert builder.name != null : "Name cannot be null";
+        assert builder.quantity >= 0 : "Quantity must be assigned";
+
         this.uid = builder.uid;
         this.name = builder.name;
         this.quantity = builder.quantity;

@@ -20,16 +20,12 @@ public class AddCommand extends Command {
 
     @Override
     public CommandResult execute(Ui ui, CardsList inventory) {
-        Card.Builder builder = new Card.Builder()
-                .price(price)
+        Card newCard = new Card.Builder()
+                .uid(uid)
                 .name(name)
-                .quantity(quantity);
-
-        if (uid != null) {
-            builder.uid(uid);
-        }
-
-        Card newCard = builder.build();
+                .price(price)
+                .quantity(quantity)
+                .build();
 
         inventory.addCard(newCard);
         ui.printAdded(inventory);
