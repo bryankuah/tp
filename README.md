@@ -43,7 +43,7 @@ You can also export and import full app data manually:
 - `compare INDEX1 INDEX2`
 - `removeindex INDEX`
 - `removename NAME`
-- `history [added | modified | removed] [NUMBER | all]`
+- `history [added | modified | removed | entire] [NUMBER | all] [ascending | descending]`
 - `download /f FILE_PATH`
 - `upload /f FILE_PATH`
 - `undoupload`
