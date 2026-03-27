@@ -50,7 +50,7 @@ public class Parser {
     private static final String[] USAGE_HISTORY_COMMAND = {
         "history [added | modified | removed | entire] [NUMBER | all] [ascending | descending]",
         "history",
-        "history added all"
+        "history added 50 ascending"
     };
 
     private static final String[] USAGE_FIND_COMMAND = {
