@@ -5,16 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.Stack;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import seedu.cardcollector.card.Card;
 import seedu.cardcollector.card.CardsList;
-import seedu.cardcollector.command.CommandContext;
-import seedu.cardcollector.command.DownloadCommand;
-import seedu.cardcollector.command.UndoUploadCommand;
-import seedu.cardcollector.command.UploadCommand;
+import seedu.cardcollector.command.*;
 
 public class StorageTest {
     @TempDir
@@ -91,7 +89,8 @@ public class StorageTest {
         Storage activeStorage = new Storage(activePath);
         UploadUndoState uploadUndoState = new UploadUndoState();
         CommandContext downloadContext = new CommandContext(
-                new StubUi(true), inventory, inventory, wishlist, activeStorage, uploadUndoState);
+                new StubUi(true), inventory, inventory, wishlist,
+                activeStorage, uploadUndoState, new Stack<Command>());
 
         new DownloadCommand(exportedPath).execute(downloadContext);
 
@@ -104,7 +103,7 @@ public class StorageTest {
                 .build());
         CommandContext uploadContext = new CommandContext(
                 new StubUi(true), importedInventory, importedInventory, importedWishlist,
-                activeStorage, uploadUndoState);
+                activeStorage, uploadUndoState, new Stack<Command>());
 
         new UploadCommand(exportedPath).execute(uploadContext);
 
@@ -137,7 +136,7 @@ public class StorageTest {
         UploadUndoState uploadUndoState = new UploadUndoState();
         CommandContext uploadContext = new CommandContext(
                 new StubUi(false), inventory, inventory, wishlist, new Storage(tempDir.resolve("active.txt")),
-                uploadUndoState);
+                uploadUndoState, new Stack<Command>());
 
         new UploadCommand(exportedPath).execute(uploadContext);
 
@@ -159,12 +158,12 @@ public class StorageTest {
         Storage activeStorage = new Storage(tempDir.resolve("active.txt"));
         CommandContext uploadContext = new CommandContext(
                 new StubUi(true), originalInventory, originalInventory,
-                originalWishlist, activeStorage, uploadUndoState);
+                originalWishlist, activeStorage, uploadUndoState, new Stack<Command>());
 
         new UploadCommand(exportedPath).execute(uploadContext);
         new UndoUploadCommand().execute(new CommandContext(
                 new StubUi(true), originalInventory, originalInventory,
-                originalWishlist, activeStorage, uploadUndoState));
+                originalWishlist, activeStorage, uploadUndoState, new Stack<Command>()));
 
         assertEquals("Original", originalInventory.getCard(0).getName());
         assertEquals("Original Wish", originalWishlist.getCard(0).getName());
