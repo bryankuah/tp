@@ -164,18 +164,20 @@ Exits the application.
 
 ## Command Summary
 
-* add /n NAME /q QTY /p PRICE
-* edit INDEX [/n NAME] [/q QTY] [/p PRICE]
-* compare INDEX1 INDEX2
-* reorder CRITERIA [asc|desc]
-* removeindex INDEX
-* removename NAME
-* history [added | modified | removed] [NUMBER | all]
-* wishlist acquired INDEX
-* download /f FILE_PATH
-* upload /f FILE_PATH
-* undoupload
-* wishlist <list command>
-* list
-* find [/n NAME] [/p PRICE] [/q QUANTITY]
-* bye
+| Command | Description |
+|--------|------------|
+| `add /n NAME /q QTY /p PRICE` | Add card |
+| `edit INDEX [...]` | Edit card |
+| `compare INDEX1 INDEX2` | Compare cards |
+| `reorder CRITERIA [asc\|desc]` | Reorder list |
+| `removeindex INDEX` | Remove by index |
+| `removename NAME` | Remove by name |
+| `history [...]` | View history |
+| `wishlist acquired INDEX` | Move to inventory |
+| `download /f FILE_PATH` | Export data |
+| `upload /f FILE_PATH` | Import data |
+| `undoupload` | Undo upload |
+| `wishlist <command>` | Use wishlist |
+| `list` | List cards |
+| `find [...]` | Search cards |
+| `bye` | Exit app |

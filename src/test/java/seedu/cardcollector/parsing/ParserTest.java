@@ -1,11 +1,15 @@
 package seedu.cardcollector.parsing;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import seedu.cardcollector.command.AddCommand;
+import seedu.cardcollector.command.RemoveCardByIndexCommand;
+import seedu.cardcollector.command.RemoveCardByNameCommand;
+import seedu.cardcollector.command.HistoryCommand;
 import seedu.cardcollector.command.Command;
 import seedu.cardcollector.command.DownloadCommand;
-import seedu.cardcollector.command.HistoryCommand;
-import seedu.cardcollector.command.UndoUploadCommand;
 import seedu.cardcollector.command.UploadCommand;
+import seedu.cardcollector.command.UndoUploadCommand;
 import seedu.cardcollector.exception.ParseBlankCommandException;
 import seedu.cardcollector.exception.ParseInvalidArgumentException;
 import seedu.cardcollector.exception.ParseUnknownCommandException;
@@ -14,11 +18,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public class ParserTest {
+    private Parser parser;
+
+    @BeforeEach
+    public void setUp() {
+        parser = new Parser();
+    }
+
     //@@author HX2003
     @Test
     public void parse_unknownCommand_exceptionThrown() {
-        Parser parser = new Parser();
-
         assertThrows(
                 ParseBlankCommandException.class,
                 () -> parser.parse(" ")
@@ -37,6 +46,105 @@ public class ParserTest {
         assertThrows(
                 ParseUnknownCommandException.class,
                 () -> parser.parse("delicious flower")
+        );
+    }
+
+    //@@author WeiHeng2003
+    @Test
+    public void parse_addCommand_success() throws Exception {
+        assertInstanceOf(AddCommand.class, parser.parse("add /n Pikachu /q 1 /p 5.5"));
+        assertInstanceOf(AddCommand.class, parser.parse("add /n Pikachu /p 5.5 /q 1"));
+        assertInstanceOf(AddCommand.class, parser.parse("add /n Charizard /q 2 /p 99.99 /id "
+                + java.util.UUID.randomUUID()));
+    }
+
+    //@@author WeiHeng2003
+    @Test
+    public void parse_addCommandMissingFlags_exceptionThrown() {
+        assertThrows(
+                ParseInvalidArgumentException.class,
+                () -> parser.parse("add /n Pikachu /q 1")
+        );
+        assertThrows(
+                ParseInvalidArgumentException.class,
+                () -> parser.parse("add /n Pikachu /p 5.5")
+        );
+        assertThrows(
+                ParseInvalidArgumentException.class,
+                () -> parser.parse("add /q 1 /p 5.5")
+        );
+        assertThrows(
+                ParseInvalidArgumentException.class,
+                () -> parser.parse("add")
+        );
+    }
+
+    //@@author WeiHeng2003
+    @Test
+    public void parse_addCommandInvalidNumbers_exceptionThrown() {
+        assertThrows(
+                ParseInvalidArgumentException.class,
+                () -> parser.parse("add /n Pikachu /q abc /p 5.5")
+        );
+        assertThrows(
+                ParseInvalidArgumentException.class,
+                () -> parser.parse("add /n Pikachu /q 1 /p xyz")
+        );
+    }
+
+    //@@author WeiHeng2003
+    @Test
+    public void parse_removeIndexCommand_success() throws Exception {
+        assertInstanceOf(
+                RemoveCardByIndexCommand.class,
+                parser.parse("removeindex 1")
+        );
+        assertInstanceOf(
+                RemoveCardByIndexCommand.class,
+                parser.parse("removeindex 99")
+        );
+    }
+
+    //@@author WeiHeng2003
+    @Test
+    public void parse_invalidRemoveIndexCommand_exceptionThrown() {
+        assertThrows(
+                ParseInvalidArgumentException.class,
+                () -> parser.parse("removeindex abc")
+        );
+        assertThrows(
+                ParseInvalidArgumentException.class,
+                () -> parser.parse("removeindex 1.5")
+        );
+        assertThrows(
+                ParseInvalidArgumentException.class,
+                () -> parser.parse("removeindex")
+        );
+    }
+
+    //@@author WeiHeng2003
+    @Test
+    public void parse_removeNameCommand_success() throws Exception {
+        assertInstanceOf(
+                RemoveCardByNameCommand.class,
+                parser.parse("removename Pikachu")
+        );
+        assertInstanceOf(
+                RemoveCardByNameCommand.class,
+                parser.parse("removename Pikachu VMAX")
+        );
+    }
+
+    //@@author WeiHeng2003
+    @Test
+    public void parse_invalidRemoveNameCommand_exceptionThrown() {
+        assertThrows(
+                ParseInvalidArgumentException.class,
+                () -> parser.parse("removename")
+        );
+        assertThrows(
+                ParseInvalidArgumentException.class,
+                () -> parser.parse("removename   ")
         );
     }
 

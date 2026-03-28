@@ -171,6 +171,16 @@ public class StorageTest {
         assertEquals(false, uploadUndoState.hasBackup());
     }
 
+    @Test
+    public void load_missingFile_returnsEmptyState() throws Exception {
+        Storage storage = new Storage(tempDir.resolve("nonexistent.txt"));
+
+        AppState state = storage.load();
+
+        assertEquals(0, state.getInventory().getSize());
+        assertEquals(0, state.getWishlist().getSize());
+    }
+
     private static CardsList buildListWithSingleCard(String name, float price, int quantity) {
         CardsList list = new CardsList();
         list.addCard(new Card.Builder()
