@@ -61,7 +61,10 @@ public class CardsList {
         assert card != null : "Card to re-insert should not be null";
         assert index >= 0 && index <= cards.size() : "Index out of bounds for re-insertion";
 
+        Instant currentInstant = Instant.now();
+        card.setLastAdded(currentInstant);
         cards.add(index, card);
+
         this.history.add(null, card.copy());
     }
 
