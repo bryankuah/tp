@@ -32,25 +32,11 @@ public class ParserTest {
     //@@author HX2003
     @Test
     public void parse_unknownCommand_exceptionThrown() {
-        assertThrows(
-                ParseBlankCommandException.class,
-                () -> parser.parse(" ")
-        );
-
-        assertThrows(
-                ParseBlankCommandException.class,
-                () -> parser.parse("     ")
-        );
-
-        assertThrows(
-                ParseUnknownCommandException.class,
-                () -> parser.parse("powwow")
-        );
-
-        assertThrows(
-                ParseUnknownCommandException.class,
-                () -> parser.parse("delicious flower")
-        );
+        assertThrows(ParseBlankCommandException.class, () -> parser.parse(""));
+        assertThrows(ParseBlankCommandException.class, () -> parser.parse(" "));
+        assertThrows(ParseBlankCommandException.class, () -> parser.parse("     "));
+        assertThrows(ParseUnknownCommandException.class, () -> parser.parse("powwow"));
+        assertThrows(ParseUnknownCommandException.class, () -> parser.parse("delicious flower"));
     }
 
     //@@author WeiHeng2003
@@ -154,6 +140,7 @@ public class ParserTest {
         );
     }
 
+    //@@author HX2003
     @Test
     public void parse_invalidArgumentHistory_exceptionThrown() {
         Parser parser = new Parser();
