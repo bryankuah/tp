@@ -23,19 +23,41 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class Ui {
-    private static final String FORMAT_UNKNOWN_COMMAND = "Unknown command \"%1$s\" entered%n";
-    private static final String FORMAT_BLANK_COMMAND = "Blank command entered, did you mean to type something?%n";
-    private static final String FORMAT_INVALID_ARGUMENT = "%1$s%n%n";
-    private static final String FORMAT_INVALID_ARGUMENT_SYNTAX_USAGE = "Usage: \"%1$s\"%n";
-    private static final String FORMAT_INVALID_ARGUMENT_EXAMPLE_USAGE = "Example: \"%1$s\"%n";
+    private static final String FORMAT_UNKNOWN_COMMAND =
+            "Unknown command \"%1$s\" entered%n";
+    private static final String FORMAT_BLANK_COMMAND =
+            "Blank command entered, did you mean to type something?%n";
+    private static final String FORMAT_INVALID_ARGUMENT =
+            "%1$s%n%n";
+    private static final String FORMAT_INVALID_ARGUMENT_SYNTAX_USAGE =
+            "Usage: \"%1$s\"%n";
+    private static final String FORMAT_INVALID_ARGUMENT_EXAMPLE_USAGE =
+            "Example: \"%1$s\"%n";
 
-    private static final String FORMAT_HISTORY_NO_RECORD = "No relevant history found!%n";
-    private static final String FORMAT_HISTORY_ADDED_RECORD = "[%1$s] + ADDED %2$s UNITS OF %3$s%n";
-    private static final String FORMAT_HISTORY_MODIFIED_RECORD = "[%1$s] # MODIFIED TO %2$s%n%3$s%n";
-    private static final String FORMAT_HISTORY_REMOVED_RECORD = "[%1$s] - REMOVED %2$s UNITS OF %3$s%n";
-    private static final String FORMAT_HISTORY_DISPLAY_ALL_RECORDS = "Displaying all %1$d records:%n";
-    private static final String FORMAT_HISTORY_DISPLAY_N_RECORDS = "Displaying latest %1$d out of %2$d records:%n";
-    private static final String FORMAT_HISTORY_CHANGED_FIELD = "\"%1$s\": %2$s -> %3$s";
+    private static final String FORMAT_HISTORY_HINT_ENTIRE =
+            "Fetching history for addition, modification and removal of cards.%n";
+    private static final String FORMAT_HISTORY_HINT_ADDED =
+            "Fetching history for addition of cards.%n";
+    private static final String FORMAT_HISTORY_HINT_MODIFIED =
+            "Fetching history for modification of cards.%n";
+    private static final String FORMAT_HISTORY_HINT_REMOVED =
+            "Fetching history for removal of cards.%n";
+    private static final String FORMAT_HISTORY_NO_RECORD =
+            "No relevant history found!%n";
+    private static final String FORMAT_HISTORY_ADDED_RECORD =
+            "[%1$s] + ADDED %2$s UNITS OF %3$s%n";
+    private static final String FORMAT_HISTORY_MODIFIED_RECORD =
+            "[%1$s] # MODIFIED TO %2$s%n%3$s%n";
+    private static final String FORMAT_HISTORY_REMOVED_RECORD =
+            "[%1$s] - REMOVED %2$s UNITS OF %3$s%n";
+    private static final String FORMAT_HISTORY_DISPLAY_ALL_RECORDS =
+            "Displaying all %1$d records:%n";
+    private static final String FORMAT_HISTORY_DISPLAY_LATEST_N_RECORDS =
+            "Displaying latest %1$d out of %2$d records:%n";
+    private static final String FORMAT_HISTORY_DISPLAY_OLDEST_N_RECORDS =
+            "Displaying oldest %1$d out of %2$d records:%n";
+    private static final String FORMAT_HISTORY_CHANGED_FIELD =
+            "\"%1$s\": %2$s -> %3$s";
 
     private static final int HISTORY_DISPLAY_DEFAULT_LIMIT = 15;
 
@@ -380,9 +402,13 @@ public class Ui {
         printBorder();
     }
 
-    private void printHistoryRecordCount(int originalSize, int maxLimitSize) {
+    private void printHistoryRecordCount(int originalSize, int maxLimitSize, boolean latest) {
         if (originalSize > maxLimitSize) {
-            out.printf(FORMAT_HISTORY_DISPLAY_N_RECORDS, maxLimitSize, originalSize);
+            if (latest) {
+                out.printf(FORMAT_HISTORY_DISPLAY_LATEST_N_RECORDS, maxLimitSize, originalSize);
+            } else {
+                out.printf(FORMAT_HISTORY_DISPLAY_OLDEST_N_RECORDS, maxLimitSize, originalSize);
+            }
         } else {
             out.printf(FORMAT_HISTORY_DISPLAY_ALL_RECORDS, originalSize);
         }
@@ -395,6 +421,24 @@ public class Ui {
         ArrayList<CardHistoryEntry> historyList = history.getSortedHistoryList(isDescending);
 
         ArrayList<CardHistoryEntry> filteredHistoryList;
+
+        switch (displayHistoryType) {
+        case ENTIRE -> {
+            out.printf(FORMAT_HISTORY_HINT_ENTIRE);
+        }
+        case ADDED -> {
+            out.printf(FORMAT_HISTORY_HINT_ADDED);
+        }
+        case MODIFIED -> {
+            out.printf(FORMAT_HISTORY_HINT_MODIFIED);
+        }
+        case REMOVED -> {
+            out.printf(FORMAT_HISTORY_HINT_REMOVED);
+        }
+        default -> {
+            assert false : "Unhandled CardHistoryType";
+        }
+        }
 
         if (displayHistoryType == CardHistoryType.ENTIRE) {
             filteredHistoryList = historyList;
@@ -410,7 +454,7 @@ public class Ui {
         if (filteredHistoryList.isEmpty()) {
             out.printf(FORMAT_HISTORY_NO_RECORD);
         } else {
-            printHistoryRecordCount(filteredHistoryList.size(), recordsLimit);
+            printHistoryRecordCount(filteredHistoryList.size(), recordsLimit, isDescending);
         }
 
         for (int i = 0; i < recordsLimit && i < filteredHistoryList.size(); i++) {
