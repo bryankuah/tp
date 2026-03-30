@@ -124,6 +124,16 @@ public class CardsList {
         return cards;
     }
 
+    public int getIndex(Card card) {
+        for (int i = 0; i < cards.size(); i++) {
+            if (cards.get(i) == card) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
     public CardsAnalytics getAnalytics(int expensiveLimit, int topSetLimit) {
         int totalQuantity = 0;
         double totalValue = 0;
@@ -229,12 +239,9 @@ public class CardsList {
         return results;
     }
 
-    public ArrayList<Card> getSortedCards(
-            CardSortCriteria criteria,
-            boolean isAscending,
-            int maxLimit,
-            int defaultMaxLimit) {
-        return CardSort.sortCards(cards, criteria, isAscending, maxLimit, defaultMaxLimit);
+    public ArrayList<Card> getSortedCards(CardSortCriteria criteria, int maxLimit,
+            int defaultMaxLimit, boolean isDescending) {
+        return CardSort.sortCards(cards, criteria, maxLimit, defaultMaxLimit, isDescending);
     }
 
     public boolean editCard(int index, String newName, Integer newQuantity, Float newPrice,

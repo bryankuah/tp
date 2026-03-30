@@ -7,11 +7,6 @@ public class HistoryCommand extends Command {
     private final int maxDisplayCount;
     private final boolean isDescending;
 
-    public HistoryCommand(CardHistoryType historyType) {
-        this.historyType = historyType;
-        this.maxDisplayCount = -1;
-        this.isDescending = true;
-    }
     public HistoryCommand(CardHistoryType historyType, int maxDisplayCount, boolean isDescending) {
         this.historyType = historyType;
         this.maxDisplayCount = maxDisplayCount;

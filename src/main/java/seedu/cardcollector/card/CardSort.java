@@ -4,10 +4,14 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CardSort {
     public static Comparator<Card> getSortComparator(CardSortCriteria criteria) {
         switch (criteria) {
+        case DEFAULT -> {
+            assert false : "Default criteria should not use a comparator";
+        }
         case NAME -> {
             return Comparator.comparing(Card::getName);
         }
@@ -39,28 +43,33 @@ public class CardSort {
     public static ArrayList<Card> sortCards(
             ArrayList<Card> cards,
             CardSortCriteria criteria,
-            boolean isAscending,
             int maxLimit,
-            int defaultMaxLimit) {
+            int defaultMaxLimit,
+            boolean isDescending) {
 
         if (cards.isEmpty()) {
             return new ArrayList<>();
         }
 
-        Comparator<Card> comparator = getSortComparator(criteria);
+        Stream<Card> cardsStream = cards.stream();
 
-        assert comparator != null : "No available comparator for criteria";
+        if (criteria != CardSortCriteria.DEFAULT) {
+            Comparator<Card> comparator = getSortComparator(criteria);
 
-        // Apply ascending/descending order
-        if (!isAscending) {
-            comparator = comparator.reversed();
+            assert comparator != null : "No available comparator for criteria";
+
+            // Apply ascending/descending order
+            if (isDescending) {
+                comparator = comparator.reversed();
+            }
+
+            cardsStream = cardsStream.sorted(comparator);
         }
 
         int recordsLimit = (maxLimit == -1) ? defaultMaxLimit :
                 Math.min(cards.size(), maxLimit);
 
-        return cards.stream()
-                .sorted(comparator)
+        return cardsStream
                 .limit(recordsLimit)
                 .collect(Collectors.toCollection(ArrayList::new));
     }

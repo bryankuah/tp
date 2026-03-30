@@ -63,13 +63,13 @@ public class Card {
             return this;
         }
 
-        public Builder price(float price) {
-            this.price = price;
+        public Builder quantity(int quantity) {
+            this.quantity = quantity;
             return this;
         }
 
-        public Builder quantity(int quantity) {
-            this.quantity = quantity;
+        public Builder price(float price) {
+            this.price = price;
             return this;
         }
 
@@ -140,8 +140,8 @@ public class Card {
             }
 
             assert name != null;
-            assert price != null;
             assert quantity != null;
+            assert price != null;
             assert quantity >= 0 : "Quantity cannot be negative";
 
             return new Card(this);

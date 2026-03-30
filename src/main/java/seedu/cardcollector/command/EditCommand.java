@@ -63,7 +63,7 @@ public class EditCommand extends Command {
         if (changed) {
             ui.printEdited(inventory, targetIndex);
         } else {
-            ui.printNotEdited(inventory);
+            ui.printNotEdited();
         }
         return new CommandResult(false, changed);
     }

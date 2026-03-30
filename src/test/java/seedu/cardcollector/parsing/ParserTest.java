@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import seedu.cardcollector.command.AddCommand;
 import seedu.cardcollector.command.AnalyticsCommand;
+import seedu.cardcollector.command.FilterCommand;
 import seedu.cardcollector.command.RemoveCardByIndexCommand;
 import seedu.cardcollector.command.RemoveCardByNameCommand;
 import seedu.cardcollector.command.HistoryCommand;
@@ -13,7 +14,6 @@ import seedu.cardcollector.command.FindCommand;
 import seedu.cardcollector.command.UploadCommand;
 import seedu.cardcollector.command.HelpCommand;
 import seedu.cardcollector.command.UndoUploadCommand;
-import seedu.cardcollector.command.ListCommand;
 import seedu.cardcollector.command.TagCommand;
 import seedu.cardcollector.exception.ParseBlankCommandException;
 import seedu.cardcollector.exception.ParseInvalidArgumentException;
@@ -185,26 +185,29 @@ public class ParserTest {
         Command command0 = parser.parse("history");
         assertInstanceOf(HistoryCommand.class, command0);
 
-        Command command1 = parser.parse("history all added");
+        Command command1 = parser.parse("history 5");
         assertInstanceOf(HistoryCommand.class, command1);
 
-        Command command2 = parser.parse("history all modified");
+        Command command2 = parser.parse("history all added");
         assertInstanceOf(HistoryCommand.class, command2);
 
-        Command command3 = parser.parse("history all removed");
+        Command command3 = parser.parse("history all modified");
         assertInstanceOf(HistoryCommand.class, command3);
 
-        Command command4 = parser.parse("history 5 removed");
+        Command command4 = parser.parse("history all removed");
         assertInstanceOf(HistoryCommand.class, command4);
 
-        Command command5 = parser.parse("history 5 modified");
+        Command command5 = parser.parse("history 5 removed");
         assertInstanceOf(HistoryCommand.class, command5);
 
-        Command command6 = parser.parse("history 5 entire asc");
+        Command command6 = parser.parse("history 5 modified");
         assertInstanceOf(HistoryCommand.class, command6);
 
-        Command command7 = parser.parse("history 5 entire descend");
+        Command command7 = parser.parse("history 5 entire asc");
         assertInstanceOf(HistoryCommand.class, command7);
+
+        Command command8 = parser.parse("history 5 entire descend");
+        assertInstanceOf(HistoryCommand.class, command8);
     }
 
     //@@author Simplificatedd
@@ -256,7 +259,7 @@ public class ParserTest {
     @Test
     public void parse_tagAndTagFilterCommands_success() throws Exception {
         assertInstanceOf(FindCommand.class, parser.parse("find /t trade"));
-        assertInstanceOf(ListCommand.class, parser.parse("list /t sealed"));
+        assertInstanceOf(FilterCommand.class, parser.parse("filter /t sealed"));
         assertInstanceOf(TagCommand.class, parser.parse("tag add 3 /t deck"));
         assertInstanceOf(TagCommand.class, parser.parse("folder remove 2 /t trade"));
         assertInstanceOf(AnalyticsCommand.class, parser.parse("analytics"));

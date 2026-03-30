@@ -2,6 +2,7 @@ package seedu.cardcollector;
 
 import seedu.cardcollector.card.Card;
 import seedu.cardcollector.card.CardFieldChange;
+import seedu.cardcollector.card.CardSortCriteria;
 import seedu.cardcollector.card.CardsHistory;
 import seedu.cardcollector.card.CardHistoryEntry;
 import seedu.cardcollector.card.CardHistoryType;
@@ -59,7 +60,12 @@ public class Ui {
     private static final String FORMAT_HISTORY_CHANGED_FIELD =
             "\"%1$s\": %2$s -> %3$s";
 
-    private static final int HISTORY_DISPLAY_DEFAULT_LIMIT = 15;
+    private static final String FORMAT_LIST_RECORD =
+            "[index = %1$s] %2$s%n";
+    private static final String FORMAT_LIST_NO_RECORD =
+            "Your card list is empty!%n";
+
+    private static final int DISPLAY_DEFAULT_LIMIT = 15;
 
     private final PrintStream out;
     private final Scanner scanner;
@@ -187,7 +193,7 @@ public class Ui {
         printList(inventory);
     }
 
-    public void printNotEdited(CardsList inventory) {
+    public void printNotEdited() {
         out.println("No changes found!");
     }
 
@@ -235,7 +241,7 @@ public class Ui {
         assert listSize >= 0 : "List size cannot be negative";
 
         if (listSize == 0) {
-            out.println("Your card list is empty!");
+            out.println(FORMAT_LIST_NO_RECORD);
         } else {
             out.println("Here is your card list!");
             for (int i = 0; i < listSize; i++) {
@@ -243,6 +249,29 @@ public class Ui {
                 assert card != null : "List should not contain null cards";
                 out.println((i + 1) + ". " + card);
             }
+        }
+        printBorder();
+    }
+
+
+    public void printList(CardsList list, CardSortCriteria sortCriteria,
+                          int maxDisplayCount, boolean isDescending) {
+        printBorder();
+
+        int originalCardsSize = list.getSize();
+
+        if (originalCardsSize == 0) {
+            out.println(FORMAT_LIST_NO_RECORD);
+            return;
+        }
+
+        ArrayList<Card> sortedCards = list.getSortedCards(sortCriteria, maxDisplayCount,
+                DISPLAY_DEFAULT_LIMIT, isDescending);
+
+        int listSize = list.getSize();
+
+        for (Card card : sortedCards) {
+            out.printf(FORMAT_LIST_RECORD, list.getIndex(card) + 1, card);
         }
         printBorder();
     }
@@ -448,7 +477,7 @@ public class Ui {
                     .collect(Collectors.toCollection(ArrayList::new));
         }
 
-        int recordsLimit = (maxDisplayCount == -1) ? HISTORY_DISPLAY_DEFAULT_LIMIT :
+        int recordsLimit = (maxDisplayCount == -1) ? DISPLAY_DEFAULT_LIMIT :
                 Math.min(filteredHistoryList.size(), maxDisplayCount);
 
         if (filteredHistoryList.isEmpty()) {
@@ -461,16 +490,16 @@ public class Ui {
             CardHistoryEntry entry = filteredHistoryList.get(i);
             CardHistoryType historyType = entry.getCardHistoryType();
 
-            printHistoryAddedEntry(entry, historyType, displayHistoryType);
-            printHistoryModifiedEntry(entry, historyType, displayHistoryType);
-            printHistoryRemovedEntry(entry, historyType, displayHistoryType);
+            printHistoryAddedEntry(entry, historyType);
+            printHistoryModifiedEntry(entry, historyType);
+            printHistoryRemovedEntry(entry, historyType);
         }
 
         printBorder();
     }
 
     private void printHistoryAddedEntry(CardHistoryEntry entry,
-                                        CardHistoryType historyType, CardHistoryType displayHistoryType) {
+                                        CardHistoryType historyType) {
         if (historyType != CardHistoryType.ADDED) {
             return;
         }
@@ -485,7 +514,7 @@ public class Ui {
     }
 
     private void printHistoryModifiedEntry(CardHistoryEntry entry,
-                                           CardHistoryType historyType, CardHistoryType displayHistoryType) {
+                                           CardHistoryType historyType) {
         if (historyType != CardHistoryType.MODIFIED) {
             return;
         }
@@ -506,7 +535,7 @@ public class Ui {
     }
 
     private void printHistoryRemovedEntry(CardHistoryEntry entry,
-                                          CardHistoryType historyType, CardHistoryType displayHistoryType) {
+                                          CardHistoryType historyType) {
         if (historyType != CardHistoryType.REMOVED) {
             return;
         }
@@ -520,5 +549,4 @@ public class Ui {
 
         out.printf(FORMAT_HISTORY_REMOVED_RECORD, date, removedQuantity, mostRecent);
     }
-
 }

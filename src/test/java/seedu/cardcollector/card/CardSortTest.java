@@ -35,14 +35,14 @@ public class CardSortTest {
         cards.add(moderateCard);
 
         ArrayList<Card> resultsDescending = CardSort.sortCards(
-                cards, CardSortCriteria.PRICE, false, -1, Integer.MAX_VALUE);
+                cards, CardSortCriteria.PRICE, -1, Integer.MAX_VALUE, true);
         assertEquals(expensiveCard, resultsDescending.get(0));
         assertEquals(moderateCard, resultsDescending.get(1));
         assertEquals(cheapCard, resultsDescending.get(2));
 
 
         ArrayList<Card> resultsAscending = CardSort.sortCards(
-                cards, CardSortCriteria.PRICE, true, -1, Integer.MAX_VALUE);
+                cards, CardSortCriteria.PRICE, -1, Integer.MAX_VALUE, false);
         assertEquals(expensiveCard, resultsAscending.get(2));
         assertEquals(moderateCard, resultsAscending.get(1));
         assertEquals(cheapCard, resultsAscending.get(0));
@@ -86,7 +86,7 @@ public class CardSortTest {
         cards.add(newestCard);
 
         ArrayList<Card> resultsDescending = CardSort.sortCards(
-                cards, CardSortCriteria.LAST_REMOVED, false, -1, Integer.MAX_VALUE);
+                cards, CardSortCriteria.LAST_REMOVED, -1, Integer.MAX_VALUE, true);
 
         assertEquals(newestCard, resultsDescending.get(0));
         assertEquals(olderCard, resultsDescending.get(1));

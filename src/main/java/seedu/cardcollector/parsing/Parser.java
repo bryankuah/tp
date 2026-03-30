@@ -10,6 +10,7 @@ import seedu.cardcollector.command.CompareCommand;
 import seedu.cardcollector.command.DownloadCommand;
 import seedu.cardcollector.command.EditCommand;
 import seedu.cardcollector.command.ExitCommand;
+import seedu.cardcollector.command.FilterCommand;
 import seedu.cardcollector.command.FindCommand;
 import seedu.cardcollector.command.HistoryCommand;
 import seedu.cardcollector.command.HelpCommand;
@@ -49,13 +50,14 @@ public class Parser {
         FLAG_ID
     };
 
-    private static final String KEYWORD_HISTORY_COMMAND = "history";
     private static final String KEYWORD_ADD_COMMAND = "add";
     private static final String KEYWORD_ACQUIRED_COMMAND = "acquired";
     private static final String KEYWORD_REMOVE_INDEX_COMMAND = "removeindex";
     private static final String KEYWORD_REMOVE_NAME_COMMAND = "removename";
     private static final String KEYWORD_FIND_COMMAND = "find";
+    private static final String KEYWORD_FILTER_COMMAND = "filter";
     private static final String KEYWORD_LIST_COMMAND = "list";
+    private static final String KEYWORD_HISTORY_COMMAND = "history";
     private static final String KEYWORD_EXIT_COMMAND = "bye";
     private static final String KEYWORD_EDIT_COMMAND = "edit";
     private static final String KEYWORD_COMPARE_COMMAND = "compare";
@@ -74,6 +76,12 @@ public class Parser {
         "reorder CRITERIA [asc|desc]",
         "reorder price desc",
         "wishlist reorder name asc"
+    };
+
+    private static final String[] USAGE_LIST_COMMAND = {
+        "list [NUMBER | all] [default | quantity | price] [ascending | descending]",
+        "list",
+        "list 50 quantity ascending"
     };
 
     private static final String[] USAGE_HISTORY_COMMAND = {
@@ -136,11 +144,6 @@ public class Parser {
         }
 
         switch (commandKeyword) {
-        case KEYWORD_HISTORY_COMMAND:
-            if (isInlineHelpRequest(arguments)) {
-                return HelpCommand.forKeyword(commandKeyword);
-            }
-            return handleHistory(arguments);
         case KEYWORD_ADD_COMMAND:
             if (isInlineHelpRequest(arguments)) {
                 return HelpCommand.forKeyword(commandKeyword);
@@ -161,11 +164,21 @@ public class Parser {
                 return HelpCommand.forKeyword(commandKeyword);
             }
             return handleFind(arguments);
+        case KEYWORD_FILTER_COMMAND:
+            if (isInlineHelpRequest(arguments)) {
+                return HelpCommand.forKeyword(commandKeyword);
+            }
+            return handleFilter(arguments);
         case KEYWORD_LIST_COMMAND:
             if (isInlineHelpRequest(arguments)) {
                 return HelpCommand.forKeyword(commandKeyword);
             }
             return handleList(arguments);
+        case KEYWORD_HISTORY_COMMAND:
+            if (isInlineHelpRequest(arguments)) {
+                return HelpCommand.forKeyword(commandKeyword);
+            }
+            return handleHistory(arguments);
         case KEYWORD_EXIT_COMMAND:
             if (isInlineHelpRequest(arguments)) {
                 return HelpCommand.forKeyword(commandKeyword);
@@ -393,30 +406,58 @@ public class Parser {
         return new FindCommand(name, price, quantity, cardSet, rarity, condition, language, cardNumber, tag);
     }
 
+    //@@author HX2003
     private Command handleList(String arguments) throws ParseInvalidArgumentException {
+        SplitTokenizer tokenizer = new SplitTokenizer(REGEX_WHITESPACES);
+        tokenizer.tokenize(arguments);
+
+        String maxDisplayCountString = tokenizer.getString(0);
+        String sortCriteriaString = tokenizer.getString(1);
+        String isDescendingString = tokenizer.getString(2);
+
+        int maxDisplayCount = getMaxDisplayCount(maxDisplayCountString, USAGE_LIST_COMMAND);
+        boolean isDescending = getIsDescending(isDescendingString, USAGE_LIST_COMMAND);
+
+        CardSortCriteria sortCriteria = CardSortCriteria.DEFAULT;
+        if (sortCriteriaString != null) {
+            try {
+                sortCriteria = Disambiguator.disambiguate(
+                        CardSortCriteria.class, CardSortCriteria::getKeyword, sortCriteriaString);
+            } catch (IllegalArgumentException e) {
+                throw new ParseInvalidArgumentException(
+                        "Unknown list argument! " + e.getMessage(), USAGE_LIST_COMMAND);
+            }
+        }
+
+        return new ListCommand(sortCriteria, maxDisplayCount, isDescending);
+    }
+
+    //@@author Simplificatedd
+    private Command handleFilter(String arguments) throws ParseInvalidArgumentException {
         if (arguments.isBlank()) {
-            return new ListCommand();
+            return new FilterCommand();
         }
 
         String tag;
         try {
-            tag = optionalTextFlag(arguments, FLAG_TAG, new String[] {FLAG_TAG});
+            tag = requireTextFlag(arguments, FLAG_TAG, new String[] {FLAG_TAG});
         } catch (Exception e) {
             throw new ParseInvalidArgumentException(
-                    "Invalid list format",
-                    new String[] {"list", "list /t sealed"}
+                    "Invalid filter format",
+                    new String[] {"filter", "filter /t sealed"}
             );
         }
 
         if (tag == null) {
             throw new ParseInvalidArgumentException(
-                    "list only supports optional /t TAG filtering",
-                    new String[] {"list", "list /t sealed"}
+                    "filter only supports /t TAG filtering",
+                    new String[] {"filter", "filter /t sealed"}
             );
         }
-        return new ListCommand(tag);
+        return new FilterCommand(tag);
     }
 
+    //@@author
     private Command handleExit(String arguments) throws ParseInvalidArgumentException {
         if (!arguments.isBlank()) {
             throw new ParseInvalidArgumentException(
@@ -530,7 +571,6 @@ public class Parser {
         return isDescending;
     }
 
-
     /**
      * Handles the "history" command by displaying different types of inventory change history.
      * The argument format is [NUMBER | all] [added | modified | removed | entire] [ascending | descending]
@@ -540,10 +580,6 @@ public class Parser {
      * @param arguments The command argument that determines which history type to display.
      */
     private Command handleHistory(String arguments) throws ParseInvalidArgumentException {
-        if (arguments.isBlank()) {
-            return new HistoryCommand(CardHistoryType.ENTIRE);
-        }
-
         SplitTokenizer tokenizer = new SplitTokenizer(REGEX_WHITESPACES);
         tokenizer.tokenize(arguments);
 
@@ -554,15 +590,18 @@ public class Parser {
         int maxDisplayCount = getMaxDisplayCount(maxDisplayCountString, USAGE_HISTORY_COMMAND);
         boolean isDescending = getIsDescending(isDescendingString, USAGE_HISTORY_COMMAND);
 
-        try {
-            CardHistoryType historyType = Disambiguator.disambiguate(
-                    CardHistoryType.class, CardHistoryType::getKeyword, historyTypeString);
-
-            return new HistoryCommand(historyType, maxDisplayCount, isDescending);
-        } catch (IllegalArgumentException e) {
-            throw new ParseInvalidArgumentException(
-                    "Unknown history argument! " + e.getMessage(), USAGE_HISTORY_COMMAND);
+        CardHistoryType historyType = CardHistoryType.ENTIRE;
+        if (historyTypeString != null) {
+            try {
+                historyType = Disambiguator.disambiguate(
+                        CardHistoryType.class, CardHistoryType::getKeyword, historyTypeString);
+            } catch (IllegalArgumentException e) {
+                throw new ParseInvalidArgumentException(
+                        "Unknown history argument! " + e.getMessage(), USAGE_HISTORY_COMMAND);
+            }
         }
+
+        return new HistoryCommand(historyType, maxDisplayCount, isDescending);
     }
 
     private Command handleEdit(String args) throws ParseInvalidArgumentException {

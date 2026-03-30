@@ -38,10 +38,14 @@ public class HelpCommand extends Command {
                 "reorder price desc",
                 "wishlist reorder name asc"
             }),
-            new HelpTopic("list", List.of(), "list cards, optionally filtered by tag", new String[] {
-                "list [/t TAG]",
+            new HelpTopic("list", List.of(), "list cards, optionally viewing a sorted list", new String[] {
+                "list [NUMBER | all] [default | quantity | price] [ascending | descending]",
                 "list",
-                "wishlist list /t sealed"
+                "list 50 quantity ascending"
+            }),
+            new HelpTopic("filter", List.of(), "filter cards by tag", new String[] {
+                "filter /t TAG",
+                "wishlist filter /t sealed"
             }),
             new HelpTopic("analytics", List.of("stats"), "show summary analytics for the current list", new String[] {
                 "analytics",

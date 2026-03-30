@@ -1,30 +1,24 @@
 package seedu.cardcollector.command;
 
-import seedu.cardcollector.card.Card;
+import seedu.cardcollector.card.CardSortCriteria;
 
-import java.util.ArrayList;
 
 public class ListCommand extends Command {
-    private final String tag;
+    private final CardSortCriteria sortCriteria;
+    private final int maxDisplayCount;
+    private final boolean isDescending;
 
-    public ListCommand() {
-        this(null);
-    }
-
-    public ListCommand(String tag) {
-        this.tag = tag;
+    public ListCommand(CardSortCriteria sortCriteria, int maxDisplayCount, boolean isDescending) {
+        this.sortCriteria = sortCriteria;
+        this.maxDisplayCount = maxDisplayCount;
+        this.isDescending = isDescending;
     }
 
     @Override
     public CommandResult execute(CommandContext context) {
-        if (tag == null) {
-            context.getUi().printList(context.getTargetList());
-            return new CommandResult(false);
-        }
-
-        ArrayList<Card> results = context.getTargetList().findCards(
-                null, null, null, null, null, null, null, null, tag);
-        context.getUi().printTaggedList(results, tag);
+        var ui = context.getUi();
+        var inventory  = context.getTargetList();
+        ui.printList(inventory, sortCriteria, maxDisplayCount, isDescending);
         return new CommandResult(false);
     }
 }
