@@ -133,8 +133,7 @@ public void printEdited(CardsList inventory, int index) {
 
 ### Undo Feature
 
-The 'undo' command allows users to reverse the most recent reversible command by popping it from the `commandHistory` stack and calling its `undo(context)` method.
-Supported reversible commands: `AddCommand`, `EditCommand`, `RemoveCardByIndexCommand`, `RemoveCardbyNameCommand`
+The 'undo' command allows users to reverse the most recent [reversible command](#reversible-commands) by popping it from the `commandHistory` stack and calling its `undo(context)` method.
 
 #### Architecture-level
 
@@ -265,37 +264,52 @@ public void printList(CardsList list) {
 - Wrapper commands (e.g. `WishlistAddCommand`) — rejected (massive duplication).
 - Single `CardCollectionManager` with a map — rejected (overkill for exactly two lists).
 
-## Product scope
-### Target user profile
-{Describe the target user profile}
+## Appendix: Product Scope
+### Target User Profile
 - Trading Card Game (TCG) collectors
 - Requires a fast and easy way to update quantity, check prices and move cards from wishlist
 - is reasonably comfortable using CLI apps
-### Value proposition
-{Describe the value proposition: what problem does it solve?}
+### Value Proposition
 - Quick commands to track cards that you currently own without having to find physical binders
 
-## User Stories
+## Appendix: User Stories
 
 | Version | As a ...      | I want to ...                                                                | So that I can ...                                                               |
 |---------|---------------|------------------------------------------------------------------------------|---------------------------------------------------------------------------------|
 | v1.0    | TCG Collector | add/remove cards to my collection with their details (name, quantity, price) | maintain an accurate digital catalog of all my cards                            |
 | v1.0    | TCG Collector | search for specific cards by name or set using text-based queries            | quickly locate cards in my collection without browsing through physical binders |
 | v1.0    | TCG Collector | organise my cards by different categories (set, rarity, card type)           | browse my collection in a structured way that suits my needs                    |
-| v1.0    | User          | edit any stored data                                                         | update/correct mistakes when I first add the card                               |
+| v1.0    | TCG Collector | edit any stored data                                                         | update/correct mistakes when I first add the card                               |
 | v1.0    | TCG Collector | view a chronological list of cards I recently added or removed               | quickly see what’s changed in my collection                                     |
 | v2.0    | TCG Collector | store my cards data even when I close the application                        | use the app without having to input my current cards again                      |
 | v2.0    | TCG Collector | have a wishlist to track what cards I want to get                            | check them off the wishlist once I have them                                    |
 
-
-## Non-Functional Requirements
+## Appendix: Non-Functional Requirements
 - Should work on any [mainstream OS](#mainstream-os) as long as it has Java 17 or above installed
 - Should be able to hold up to 1000 cards without a noticeable sluggishness in performance
 
-## Glossary
+## Appendix: Glossary
 ### Mainstream OS
 - Windows, Linux, Unix
+### Reversible Commands
+- `add`, `removeindex`,`removename`,`edit`
 
-## Instructions for manual testing
-{Give instructions on how to do a manual product testing e.g., how to load sample data to be used for testing}
+## Appendix: Instructions For Manual Testing
+Given below are instructions to test the app manually.
 
+### Adding a card
+1. Test case: `add /n Pikachu EX /q 3 /p 195.50`  
+Expected: A new card is added into the list, with the corresponding name, quantity and price
+2. Test case: `add /n Mewtwo /p 50.20`  
+Expected: No card added. Error details shows missing required flags. 
+3. Test case: `add /nCharizard/q1/p2.2`  
+Expected: No card added. Error details shows invalid add format.
+
+### Undo a add/remove/edit
+1. Prerequisites: A add/remove/edit command must be entered before this
+2. Test case: `add /n Pikachu EX /q 3 /p 195.50` + `undo`  
+Expected: A new card is added and the same card is removed.
+3. Test case: `add /n Mewtwo /q 3 /p 50.2` + `add /n Mewtwo /q 1 /p 50.2` + `undo`  
+Expected: A new card is added, quantity is increased then quantity is decreased back to original amount.
+4. Test case: `undo` (without any prior [reversible command](#reversible-commands))  
+Expected: Nothing happens. Error details show Nothing to Undo.
