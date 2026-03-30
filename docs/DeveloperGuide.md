@@ -1,5 +1,25 @@
 # Developer Guide
 
+## Table of Contents
+- [Acknowledgements](#acknowledgements)
+- [Design & Implementation](#design--implementation)
+    - [Edit Feature](#edit-feature)
+      - [Architecture-level](#architecture-level)
+      - [Implementation](#implementation-key-code-snippets)
+      - [Sequence Diagram](#sequence-diagram-edit-1-n-dragonite-q-3)
+    - [Wishlist](#wishlist-feature)
+      - [Architecture-level](#architecture-level-1)
+      - [Implementation](#implementation-key-code-snippets-1)
+      - [Class Diagram](#class-diagram)
+    - [Product Scope](#product-scope)
+      - [Target User Profile](#target-user-profile)
+      - [Value Proposition](#value-proposition) 
+    - [User Stories](#user-stories)
+    - [Non-Functional Requirements](#non-functional-requirements)
+    - [Glossary](#glossary)
+      - [Mainsteam OS](#mainstream-os)
+    - [Instructions for manual testing](#instructions-for-manual-testing)
+
 ## Acknowledgements
 - For the PlantUML styling, we adapted from [addressbook-level3](https://github.com/se-edu/addressbook-level3/blob/master/docs/diagrams/style.puml).
 
