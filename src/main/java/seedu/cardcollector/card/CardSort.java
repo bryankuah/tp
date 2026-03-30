@@ -30,7 +30,7 @@ public class CardSort {
                     Comparator.nullsFirst(Instant::compareTo));
         }
         default -> {
-            assert false : "Invalid criteria";
+            assert false : "Unhandled CardSortCriteria";
         }
         }
         return null;

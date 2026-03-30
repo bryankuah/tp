@@ -535,9 +535,7 @@ public class Parser {
      * Handles the "history" command by displaying different types of inventory change history.
      * The argument format is [added | modified | removed | entire] [NUMBER | all] [ascending | descending]
      * All arguments are optional, but if provided, they must be in order.
-     * Argument matching is intentionally fuzzy for fast usage.
-     * For example, input starting with "a" will
-     * match "added", "m" will match "modified", and "r" will match "removed".
+     * Argument matching is intentionally fuzzy for fast usage, see Disambiguator class for more info.
      *
      * @param arguments The command argument that determines which history type to display.
      */
@@ -556,16 +554,14 @@ public class Parser {
         int maxDisplayCount = getMaxDisplayCount(maxDisplayCountString, USAGE_HISTORY_COMMAND);
         boolean isDescending = getIsDescending(isDescendingString, USAGE_HISTORY_COMMAND);
 
-        if (CardHistoryType.ADDED.getName().startsWith(historyTypeString)) {
-            return new HistoryCommand(CardHistoryType.ADDED, maxDisplayCount, isDescending);
-        } else if (CardHistoryType.MODIFIED.getName().startsWith(historyTypeString)) {
-            return new HistoryCommand(CardHistoryType.MODIFIED, maxDisplayCount, isDescending);
-        } else if (CardHistoryType.REMOVED.getName().startsWith(historyTypeString)) {
-            return new HistoryCommand(CardHistoryType.REMOVED, maxDisplayCount, isDescending);
-        }  else if (CardHistoryType.ENTIRE.getName().startsWith(historyTypeString)) {
-            return new HistoryCommand(CardHistoryType.ENTIRE, maxDisplayCount, isDescending);
-        }   else {
-            throw new ParseInvalidArgumentException("Unknown history argument!", USAGE_HISTORY_COMMAND);
+        try {
+            CardHistoryType historyType = Disambiguator.disambiguate(
+                    CardHistoryType.class, CardHistoryType::getKeyword, historyTypeString);
+
+            return new HistoryCommand(historyType, maxDisplayCount, isDescending);
+        } catch (IllegalArgumentException e) {
+            throw new ParseInvalidArgumentException(
+                    "Unknown history argument! " + e.getMessage(), USAGE_HISTORY_COMMAND);
         }
     }
 

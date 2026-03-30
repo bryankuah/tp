@@ -6,13 +6,13 @@ public enum CardHistoryType {
     MODIFIED("modified"),
     ENTIRE("entire");
 
-    private final String name;
+    private final String keyword;
 
-    CardHistoryType(String name) {
-        this.name = name;
+    CardHistoryType(String keyword) {
+        this.keyword = keyword;
     }
 
-    public String getName() {
-        return name;
+    public String getKeyword() {
+        return keyword;
     }
 }

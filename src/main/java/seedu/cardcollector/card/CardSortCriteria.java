@@ -8,13 +8,13 @@ public enum CardSortCriteria {
     LAST_MODIFIED("modified"),
     LAST_REMOVED("removed");
 
-    private final String name;
+    private final String keyword;
 
-    CardSortCriteria(String name) {
-        this.name = name;
+    CardSortCriteria(String keyword) {
+        this.keyword = keyword;
     }
 
-    public String getName() {
-        return name;
+    public String getKeyword() {
+        return keyword;
     }
 }
