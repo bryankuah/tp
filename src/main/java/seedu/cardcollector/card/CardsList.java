@@ -13,7 +13,7 @@ public class CardsList {
     private CardsHistory history;
 
     public CardsList() {
-        this.cards = new ArrayList<Card>();
+        this.cards = new ArrayList<>();
         this.history = new CardsHistory();
     }
 
@@ -234,11 +234,6 @@ public class CardsList {
         return results;
     }
 
-    public ArrayList<Card> getSortedCards(CardSortCriteria criteria, int maxLimit,
-            int defaultMaxLimit, boolean isDescending) {
-        return CardSort.sortCards(cards, criteria, maxLimit, defaultMaxLimit, isDescending);
-    }
-
     public boolean editCard(int index, String newName, Integer newQuantity, Float newPrice,
             String newCardSet, String newRarity, String newCondition, String newLanguage, String newCardNumber) {
         assert index >= 0 && index < cards.size() : "Index should be validated before calling editCard";
@@ -406,7 +401,7 @@ public class CardsList {
             return;
         }
 
-        Comparator<Card> comparator = CardSort.getSortComparator(criteria);
+        Comparator<Card> comparator = CardSorter.getSortComparator(criteria);
         assert comparator != null : "No available comparator for criteria";
 
         if (!isAscending) {
