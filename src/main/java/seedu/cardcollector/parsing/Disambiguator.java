@@ -2,6 +2,7 @@ package seedu.cardcollector.parsing;
 
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -87,6 +88,25 @@ public class Disambiguator {
                 .filter(e -> keywordExtractor.apply(e).equalsIgnoreCase(keyword))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Enum conversion failed for: " + keyword));
+    }
+
+    /**
+     * Disambiguate an input string against the keys of a Map of keywords strings,
+     * the output value will be the values of the map,
+     * the input string will be converted to lowercase before further matching.
+     *
+     * @param map A Map of strings whose key is used to look up against, should be lowercase.
+     * @param input The input string.
+     * @return The matching value corresponding to the string if found.
+     * @throws IllegalArgumentException if no match found or if ambiguous.
+     */
+    public static <T> T disambiguate(Map<String, T> map, String input)
+            throws IllegalArgumentException {
+        ArrayList<String> keywords = new ArrayList<>(map.keySet());
+
+        String keyword = disambiguate(keywords, input);
+
+        return map.get(keyword);
     }
 
 }
