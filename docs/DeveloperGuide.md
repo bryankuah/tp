@@ -51,10 +51,10 @@ The architecture of CardCollector consists of three main components:
 3. `CardCollector` then creates a `CommandContext` and calls `command.execute(context)`.
 4. `AddCommand.execute()` calls `targetList.addCard(newCard)`.
 5. `CardList.addCard` scans for an existing card with identical name, price, etc... If found, it increments that card's quantity and sets the timestamp `lastAdded`.  
-   Otherwise, it adds the new card at the end of the list. After which, regardless of the case records a CardHistory entry
+Otherwise, it adds the new card at the end of the list. After which, regardless of the case records a CardHistory entry
 
 #### Implementation
-1. The core logic is in `CardsList.java`:
+1. The core logic is in `CardsList.java`:  
 ```java
 public void addCard(Card newCard) {
     Instant currentInstant = Instant.now();

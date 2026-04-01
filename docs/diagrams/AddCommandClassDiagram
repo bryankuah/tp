@@ -1,0 +1,56 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+abstract class Command {
+  # isReversible : boolean
+  + execute(ctx : CommandContext) : CommandResult
+  + undo(ctx : CommandContext) : CommandResult
+}
+
+class AddCommand {
+  - uid : UUID
+  - name : String
+  - quantity : int
+  - price : float
+  - cardSet : String
+  - rarity : String
+  - condition : String
+  - language : String
+  - cardNumber : String
+  - addedCard : Card
+  - addedIndex : int
+  - wasMerged : boolean
+  + execute(ctx : CommandContext) : CommandResult
+  + undo(ctx : CommandContext) : CommandResult
+  - sameText(left : String, right : String) : boolean
+}
+
+class CommandContext {
+  + getTargetList() : CardsList
+  + getUi() : Ui
+}
+
+class CardsList {
+  + addCard(card : Card)
+  + editCard(...) : boolean
+  + removeCardByIndex(index : int)
+}
+
+class Card {
+  - name : String
+  - quantity : int
+  - price : float
+}
+
+class CommandResult {
+  - isExit : boolean
+  - shouldSave : boolean
+}
+
+Command <|-- AddCommand
+
+AddCommand "1" ..> "1" CommandContext : uses
+AddCommand "1" ..> "1" CardsList     : calls
+AddCommand "1" ..> "0..1" Card       : creates
+AddCommand "1" ..> "1" CommandResult : returns
+@enduml
