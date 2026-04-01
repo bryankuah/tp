@@ -25,7 +25,7 @@ CardCollector -[hidden]-> Parser
 create CommandContext
 CardCollector -> CommandContext
 activate CommandContext
-CommandContext -> CardCollector : context
+CommandContext --> CardCollector : context
 deactivate
 
 CardCollector -> HistoryCommand : execute(context)
