@@ -19,8 +19,8 @@
 !define COMMANDCONTEXT_COLOR_BACKGROUND #FFE6F3
 !define UI_COLOR_PRIMARY #D16C00
 !define UI_COLOR_BACKGROUND ##FFDCB8
-!define CARDCOLLECTOR_COLOR_PRIMARY #009BA3
-!define CARDCOLLECTOR_COLOR_BACKGROUND #B8FBFF
+!define CARDSLIST_COLOR_PRIMARY #009BA3
+!define CARDSLIST_COLOR_BACKGROUND #B8FBFF
 
 skinparam Package {
     BackgroundColor #FFFFFF
@@ -29,11 +29,9 @@ skinparam Package {
 }
 
 skinparam Class {
-    FontColor #FFFFFF
-    FontSize 15
+    FontSize 16
+    FontColor #?black:white
     BorderThickness 1
-    BorderColor #FFFFFF
-    StereotypeFontColor #FFFFFF
     FontName Arial
 }
 
@@ -45,12 +43,12 @@ skinparam Sequence {
     MessageAlign center
     BoxFontSize 15
     BoxPadding 0
-    BoxFontColor #FFFFFF
+    BoxFontColor #?black:white
     FontName Arial
 }
 
 skinparam Participant {
-    FontColor #FFFFFFF
+    FontColor #?black:white
     Padding 20
 }
 
@@ -59,7 +57,7 @@ skinparam ParticipantPadding 10
 skinparam Shadowing false
 skinparam DefaultTextAlignment center
 skinparam packageStyle Rectangle
+skinparam classAttributeIconSize 0
 
 hide footbox
-hide members
 hide circle
