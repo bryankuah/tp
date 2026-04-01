@@ -100,19 +100,21 @@ public void addCard(Card newCard) {
 ```  
 The check for existing card to decide merge or append:
 ```java
-private static boolean isSameCardVariant(Card first, Card second) {
+    private static boolean isSameCardVariant(Card first, Card second) {
     return first.getName().equalsIgnoreCase(second.getName())
             && first.getPrice() == second.getPrice()
             && normalized(first.getCardSet()).equals(normalized(second.getCardSet()))
             && normalized(first.getRarity()).equals(normalized(second.getRarity()))
             && normalized(first.getCondition()).equals(normalized(second.getCondition()))
             && normalized(first.getLanguage()).equals(normalized(second.getLanguage()))
-            && normalized(first.getCardNumber()).equals(normalized(second.getCardNumber()));
+            && normalized(first.getCardNumber()).equals(normalized(second.getCardNumber()))
+            && normalized(first.getNote()).equals(normalized(second.getNote()));
 }
 ```
 - The `/nt` flag allows storing additional notes for a card.
 - Notes are stored as an optional field in `Card`.
-- Notes are not part of duplicate detection. As a result, two cards with the same variant fields but different notes are still treated according to the existing `isSameCardVariant(...)` comparison logic.
+- Notes are included in `isSameCardVariant(...)`.
+- As a result, two cards with identical variant fields but different notes are treated as different variants and will be stored as separate entries.
 
 #### Class Diagram
 <img src="images/AddCommandClassDiagram.svg" width="900" />
@@ -296,7 +298,7 @@ If the `lastCommand` was an:
     this.oldQuantity = card.getQuantity();
     // ...other fields...
     boolean changed = inventory.editCard(targetIndex, newName, newQuantity, newPrice,
-            newCardSet, newRarity, newCondition, newLanguage, newCardNumber);
+            newCardSet, newRarity, newCondition, newLanguage, newCardNumber, newNote);
     this.isReversible = changed;
 
     if (changed) {
@@ -309,7 +311,7 @@ If the `lastCommand` was an:
     ```java
     public CommandResult undo(CommandContext context) {
     context.getTargetList().editCard(targetIndex, oldName, oldQuantity, oldPrice,
-            oldCardSet, oldRarity, oldCondition, oldLanguage, oldCardNumber);
+            oldCardSet, oldRarity, oldCondition, oldLanguage, oldCardNumber, oldNote);
     ```
 - `RemoveCardByIndexCommand` or `RemoveCardByNameCommand`: saves the card and its index
     ```java
