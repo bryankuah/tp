@@ -252,9 +252,17 @@ public class Ui {
         assert listSize >= 0 : "List size cannot be negative";
 
         if (listSize == 0) {
-            out.println(FORMAT_LIST_DISPLAY_NO_RECORD);
+            if (list.isWishlist()) {
+                out.println("Your wishlist is empty!");
+            } else {
+                out.println(FORMAT_LIST_DISPLAY_NO_RECORD);
+            }
         } else {
-            out.println("Here is your card list!");
+            if (list.isWishlist()) {
+                out.println("This is your wishlist!");
+            } else {
+                out.println("Here is your card list!");
+            }
             for (int i = 0; i < listSize; i++) {
                 Card card = list.getCard(i);
                 assert card != null : "List should not contain null cards";
@@ -272,7 +280,7 @@ public class Ui {
         ArrayList<Card> sortedCards = CardSorter.sort(cards, sortCriteria, maxDisplayCount,
                 DISPLAY_DEFAULT_LIMIT, isDescending);
 
-        printListRecordCount(list.getSize(), sortedCards.size(), isDescending, sortCriteria.getKeyword());
+        printListRecordCount(list, list.getSize(), sortedCards.size(), isDescending, sortCriteria.getKeyword());
 
         for (Card card : sortedCards) {
             out.printf(FORMAT_LIST_RECORD, list.getIndex(card) + 1, card);
@@ -293,10 +301,14 @@ public class Ui {
      * @param isDescending If records are sorted in descending order.
      * @param sortCriteriaString The criteria by which records are sorted.
      */
-    private void printListRecordCount(int originalSize, int limitedSize,
+    private void printListRecordCount(CardsList list, int originalSize, int limitedSize,
                                       boolean isDescending, String sortCriteriaString) {
         if (originalSize == 0) {
-            out.println(FORMAT_LIST_DISPLAY_NO_RECORD);
+            if (list.isWishlist()) {
+                out.println("Your wishlist is empty!");
+            } else {
+                out.println(FORMAT_LIST_DISPLAY_NO_RECORD);
+            }
             return;
         }
 

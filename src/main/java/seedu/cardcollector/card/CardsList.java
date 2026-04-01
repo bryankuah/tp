@@ -11,15 +11,18 @@ import java.util.stream.Collectors;
 public class CardsList {
     private final ArrayList<Card> cards;
     private CardsHistory history;
+    private boolean isWishlist;
 
     public CardsList() {
         this.cards = new ArrayList<>();
         this.history = new CardsHistory();
+        this.isWishlist = false;
     }
 
     public CardsList(ArrayList<Card> cards, CardsHistory history) {
         this.cards = new ArrayList<>(cards);
         this.history = history;
+        this.isWishlist = false;
     }
 
     public void addCard(Card newCard) {
@@ -170,14 +173,17 @@ public class CardsList {
         cards.clear();
         cards.addAll(other.getCards());
         history = other.getHistory().copy();
+        isWishlist = other.isWishlist();
     }
 
     public CardsList deepCopy() {
         Map<java.util.UUID, Card> copiedCards = new HashMap<>();
-        return new CardsList(
+        CardsList copy = new CardsList(
                 copyCards(cards, copiedCards),
                 history.copy()
         );
+        copy.setWishlist(isWishlist);
+        return copy;
     }
 
     private static ArrayList<Card> copyCards(ArrayList<Card> source, Map<java.util.UUID, Card> copiedCards) {
@@ -443,6 +449,14 @@ public class CardsList {
         cards.sort(comparator);
 
         assert cards.size() > 0 : "List should not be empty if it wasn't before reorder";
+    }
+
+    public boolean isWishlist() {
+        return isWishlist;
+    }
+
+    public void setWishlist(boolean isWishlist) {
+        this.isWishlist = isWishlist;
     }
 
     public CardsHistory getHistory() {

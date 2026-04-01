@@ -9,6 +9,9 @@ public class AppState {
     public AppState(CardsList inventory, CardsList wishlist) {
         this.inventory = inventory;
         this.wishlist = wishlist;
+
+        this.inventory.setWishlist(false);
+        this.wishlist.setWishlist(true);
     }
 
     public CardsList getInventory() {
