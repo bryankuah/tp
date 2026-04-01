@@ -158,7 +158,7 @@ public class CardsList {
                 setValues.merge(normalizedSetName, (double) card.getPrice() * card.getQuantity(), Double::sum);
             }
 
-            if (card.getPrice() == 0) {
+            if (card.getPrice() <= 0) {
                 zeroPriceCards++;
             } else if (card.getPrice() < 10) {
                 lowPriceCards++;
