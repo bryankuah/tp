@@ -236,9 +236,9 @@ Moves a card from the wishlist to your main inventory (and removes it from the w
 **Example:**
 `wishlist acquired 3`
 
-### clear
+### Clearing
 
-Clears **all** cards from the current list (inventory or wishlist).  
+Clears **all** cards and their histories from the current list (inventory or wishlist).  
 The action is **reversible** with `undo`.
 
 **Format:**  
@@ -316,5 +316,5 @@ Exits the application.
 | `history [...]`                | View history                         |
 | `wishlist <command>`           | Use wishlist                         |
 | `find [...]`                   | Search cards                         |
-| `clear`                        | Remove all cards                     |
+| `clear`                        | Clear all cards and their histories  |
 | `bye`                          | Exit app                             |
