@@ -36,7 +36,7 @@ Adds a new card to the current list.
 - `NAME` can contain spaces.
 - `QUANTITY` must be an integer greater than or equal to 0.
 - `PRICE` must be a valid number.
-- Metadata flags are optional.
+- Rest of the metadata flags are optional.
 
 **Example:** 
 `add /n Pikachu VMAX /q 2 /p 25.50`

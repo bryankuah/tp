@@ -63,14 +63,17 @@ public class AddCommand extends Command {
                     && sameText(existing.getNote(), note)) {
                 this.wasMerged = true;
                 this.addedIndex = i;
+
+                int newQuantity = existing.getQuantity() + quantity;
+                inventory.editCard(i, null, newQuantity, null,
+                        null, null, null, null, null, null);
                 break;
             }
         }
 
-        inventory.addCard(addedCard);
-
         if (!wasMerged) {
-            this.addedIndex = inventory.getCards().size() - 1;
+            inventory.addCard(addedCard);
+            this.addedIndex = inventory.getCards().size()-1;
         }
 
         context.getUi().printAdded(inventory);

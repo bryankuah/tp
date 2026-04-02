@@ -167,6 +167,82 @@ public class CommandTest {
         assertEquals(8, historyList.size());
     }
 
+    //@@author WeiHeng2003
+    @Test
+    public void execute_addMergeUndo_restoresQuantity() {
+        CommandContext commandContext = createCommandContext();
+
+        Command add1 = new AddCommand(null, "MyCard", 3, 5.0f,
+                null, null, null, null, null, null);
+        Command add2 = new AddCommand(null, "MyCard", 2, 5.0f,
+                null, null, null, null, null, null);
+
+        add1.execute(commandContext);
+        commandContext.getCommandHistory().push(add1);
+        add2.execute(commandContext);
+        commandContext.getCommandHistory().push(add2);
+
+        assertEquals(5, commandContext.getInventory().getCard(0).getQuantity());
+
+        new UndoCommand().execute(commandContext);
+
+        assertEquals(1, commandContext.getInventory().getSize());
+        assertEquals(3, commandContext.getInventory().getCard(0).getQuantity());
+    }
+
+    //@@author WeiHeng2003
+    @Test
+    public void execute_multipleUndos_restoresInOrder() {
+        CommandContext commandContext = createCommandContext();
+
+        Command add1 = new AddCommand(null, "CardA", 1, 5.0f,
+                null, null, null, null, null, null);
+        Command add2 = new AddCommand(null, "CardB", 1, 5.0f,
+                null, null, null, null, null, null);
+
+        add1.execute(commandContext);
+        commandContext.getCommandHistory().push(add1);
+        add2.execute(commandContext);
+        commandContext.getCommandHistory().push(add2);
+
+        new UndoCommand().execute(commandContext);
+        assertEquals(1, commandContext.getInventory().getSize());
+        assertEquals("CardA", commandContext.getInventory().getCard(0).getName());
+
+        new UndoCommand().execute(commandContext);
+        assertEquals(0, commandContext.getInventory().getSize());
+    }
+
+    //@@author WeiHeng2003
+    @Test
+    public void execute_removeInvalidIndex_notSavedToHistory() {
+        CommandContext ctx = createCommandContext();
+
+        Command remove = new RemoveCardByIndexCommand(0);
+        remove.execute(ctx);
+
+        if (remove.isReversible()) {
+            ctx.getCommandHistory().push(remove);
+        }
+        assertEquals(0, ctx.getCommandHistory().size());
+    }
+
+    //@@author WeiHeng2003
+    @Test
+    public void execute_addSameCard_doesNotCreateDuplicateCard() {
+        CommandContext ctx = createCommandContext();
+
+        new AddCommand(null, "Pikachu", 2, 5.0f,
+                null, null, null, null, null, null).execute(ctx);
+
+        new AddCommand(null, "Pikachu", 3, 5.0f,
+                null, null, null, null, null, null).execute(ctx);
+
+        assertEquals(1, ctx.getInventory().getSize());
+        assertEquals(5, ctx.getInventory().getCard(0).getQuantity());
+    }
+
+
     //@@author Simplificatedd
     @Test
     public void execute_helpCommand_printsOverviewWithoutSaving() {
