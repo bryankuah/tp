@@ -8,7 +8,10 @@ participant ":Parser" as Parser PARSER_COLOR_PRIMARY
 participant ":HistoryCommand" as HistoryCommand COMMAND_COLOR_PRIMARY
 participant ":Ui" as Ui UI_COLOR_PRIMARY
 
-CardCollector -> Parser : parse("history all added")
+-> CardCollector : input "history all added"
+
+activate CardCollector
+CardCollector -> Parser : parse(input)
 activate Parser
 
 create HistoryCommand
@@ -40,7 +43,9 @@ HistoryCommand --> CardCollector : commandResult
 deactivate HistoryCommand
 CardCollector -[hidden]-> Parser
 destroy HistoryCommand
-@enduml
+
+<-- CardCollector
+deactivate CardCollector
 
 
 @enduml

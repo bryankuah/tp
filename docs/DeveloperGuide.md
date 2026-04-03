@@ -45,7 +45,9 @@
         - [Implementation](#implementation-key-code-snippets-3)
         - [Class Diagram](#class-diagram-2)
         - [Sequence Diagram](#sequence-diagram-wishlist-add-example)
-    - [Disambiguator](#disambiguator)
+    - [Parser: Exceptions](#parser-exceptions)
+        - [Class Diagram](#class-diagram-3)
+    - [Parser: Disambiguator](#parser-disambiguator)
 - [Appendix: Product Scope](#appendix-product-scope)
     - [Target User Profile](#target-user-profile)
     - [Value Proposition](#value-proposition)
@@ -336,7 +338,7 @@ When the user types `list 50 quantity descending`:
 - If no arguments are provided, cards are listed by index in ascending order.
 
 #### Design decisions
-- Fuzzy argument matching using the [Disambiguator](#disambiguator) allows faster typing for experienced CLI users.
+- Fuzzy argument matching using the [Disambiguator](#parser-disambiguator) allows faster typing for experienced CLI users.
 - Sorting is kept read-only so listing never mutates stored card data.
 
 #### Card sorting classes
@@ -528,12 +530,12 @@ Whenever an `add`, `edit`, `remove*`, `tag` or any other command that changes th
 #### History Command
 The `history` command simply displays the historical log that were generated when other commands were executed.
 As such, this command itself does not change or mutate any data.
-The parsing of this command uses the [Disambiguator](#disambiguator) to support fuzzy arguments.
+The parsing of this command uses the [Disambiguator](#parser-disambiguator) to support fuzzy arguments.
 
 To model the interactions that occur when the user issues the command `history all added`, below is a *Sequence Diagram* to illustrate it.
 Some details related to `UI` input handling, and `CardsHistory` have been omitted for brevity.
 
-<img src="images/HistorySequenceDiagram.svg" width="550" />
+<img src="images/HistorySequenceDiagram.svg" width="600" />
 
 **Note:** The lifeline for `HistoryCommand` actually ends at the destroy marker (X), but due to a limitation in PlantUML, the dotted lifeline continues downwards.
 
@@ -601,7 +603,16 @@ public void printList(CardsList list) {
 - Single `CardCollectionManager` with a map — rejected (overkill for exactly two lists).
 
 
-### Disambiguator
+### Parser: Exceptions
+During parsing, users may occasionally enter invalid inputs.
+To handle this reliably, 3 fine-grained exceptions  `ParseBlankCommandException`,
+`ParseUnknownCommandException`, and `ParseInvalidArgumentException` which all inherits from `ParseException` are defined.
+This ensures traceability, providing users with clear context about the issue, and suggests the proper usage whenever possible.
+
+#### Class Diagram
+<img src="images/ParserExceptionsClassDiagram.svg" width="600"/>
+
+### Parser: Disambiguator
 The `Disambiguator` takes an input string and matches it against a list of keywords strings
 to determine which one the user intended to enter.
 This is to support fuzzy arguments in certain commands to make it faster for users to type.

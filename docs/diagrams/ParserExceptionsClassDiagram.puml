@@ -1,0 +1,34 @@
+@startuml
+!include Style.puml
+
+skinparam linetype ortho
+skinparam nodesep 100
+
+class Exception {
+    - message: String
+    + Exception(message: String)
+}
+
+class ParseException {
+    + ParseException(message: String)
+}
+
+class ParseBlankCommandException {
+    + ParseBlankCommandException()
+}
+
+class ParseUnknownCommandException {
+    + ParseUnknownCommandException(message: String)
+}
+
+class ParseInvalidArgumentException {
+    - usage: String[]
+    + ParseInvalidArgumentException(message: String, usage: String[])
+}
+
+Exception <|-- ParseException
+ParseException <|-- ParseBlankCommandException
+ParseException <|-- ParseUnknownCommandException
+ParseException <|-- ParseInvalidArgumentException
+
+@enduml
