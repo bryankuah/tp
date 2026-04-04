@@ -188,6 +188,8 @@ Undoes the most recent reversible add, remove, or edit action.
 
 **Format:** `undo`
 
+**Example:** `add /n Pikachu /q 1 /p 32.5` followed by `undo`
+
 ### Finding duplicate cards: `duplicates`
 
 Displays cards in the current list that have duplicates.
