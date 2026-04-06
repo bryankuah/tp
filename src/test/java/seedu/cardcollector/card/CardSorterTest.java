@@ -33,6 +33,17 @@ public class CardSorterTest {
                 cards, CardSortCriteria.INDEX, -1, Integer.MAX_VALUE, false);
         assertEquals(card0, resultsAscending.get(0));
         assertEquals(card1, resultsAscending.get(1));
+
+        // Test whether the limits work too
+        ArrayList<Card> resultsDescendingDefaultLimited = CardSorter.sort(
+                cards, CardSortCriteria.INDEX, -1, 1, true);
+        assertEquals(card1, resultsDescendingDefaultLimited.get(0));
+        assertEquals(1, resultsDescendingDefaultLimited.size());
+
+        ArrayList<Card> resultsDescendingNonDefaultLimited = CardSorter.sort(
+                cards, CardSortCriteria.INDEX, 1, Integer.MAX_VALUE, true);
+        assertEquals(card1, resultsDescendingNonDefaultLimited.get(0));
+        assertEquals(1, resultsDescendingNonDefaultLimited.size());
     }
 
     @Test
@@ -118,5 +129,4 @@ public class CardSorterTest {
         assertEquals(oldestCard, resultsDescending.get(2));
         assertEquals(unspecifiedCard, resultsDescending.get(3));
     }
-
 }
