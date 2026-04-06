@@ -11,6 +11,7 @@ import seedu.cardcollector.exception.ParseBlankCommandException;
 import seedu.cardcollector.exception.ParseInvalidArgumentException;
 import seedu.cardcollector.exception.ParseUnknownCommandException;
 import seedu.cardcollector.parsing.Parser;
+import seedu.cardcollector.ui.Ui;
 
 public class CardCollector {
     private final Ui ui;
