@@ -42,10 +42,11 @@ deactivate Ui
 HistoryCommand --> CardCollector : commandResult
 deactivate HistoryCommand
 CardCollector -[hidden]-> Parser
-destroy HistoryCommand
 
 <-- CardCollector
 deactivate CardCollector
 
+destroy CommandContext
+destroy HistoryCommand
 
 @enduml

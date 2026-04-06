@@ -43,7 +43,8 @@
         - [Design decisions](#design-decisions-5)
         - [Architecture-level](#architecture-level-8)
         - [Class Diagram](#class-diagram-1)
-        - [Sequence Diagram](#sequence-diagram-1)
+        - [Sequence Diagram for Adding History Entry](#sequence-diagram-for-adding-history-entry)
+        - [Sequence Diagram for History Command](#sequence-diagram-for-history-command)
     - [Wishlist Feature](#wishlist-feature)
         - [Architecture-level](#architecture-level-9)
         - [Implementation](#implementation-key-code-snippets-3)
@@ -523,13 +524,20 @@ The exception to this is the `clear` command which clears the history
   which was why it was not adopted.
 
 #### Architecture Level
-Whenever an `add`, `edit`, `remove*`, `tag` or any other command that changes the inventory is executed
-1. A new `CardHistoryEntry` is created. It stores the previous version of the card before any changes (if any), and
-   the current version of the card after the changes (if any).
-2. This new entry is added to `CardsHistory`.
+Whenever an `add`, `edit`, `remove*`, `tag` or any other command that changes the inventory list is executed
+1. A copy of the previous version of the card before any changes is created (if any, `null` otherwise), and
+   a copy of the current version of the card after the changes is created (if any, `null` otherwise).
+2. These two cards are passed to the `add` method of `CardsHistory`, in which a `CardHistoryEntry` is created.
+
+Note: a conflict arises when `edit` command both changes the quantity and other fields like the name,
+in such a case the `add` method of `CardsHistory` will be called twice,
+one for change in quantity, and the other for the change in the other fields.
 
 #### Class Diagram
-<img src="images/HistoryClassDiagram.svg" width="550" />
+<img src="images/HistoryClassDiagram.svg" width="800" />
+
+#### Sequence Diagram for Adding History Entry
+<img src="images/HistoryAddSequenceDiagram.svg" width="600" />
 
 #### History Command
 The `history` command simply displays the historical log that were generated when other commands were executed.
@@ -540,10 +548,10 @@ To model the interactions that occur when the user issues the command `history a
 Some details related to `UI` input handling, and `CardsHistory` have been omitted for brevity.
 
 
-#### Sequence Diagram
+#### Sequence Diagram for History Command
 <img src="images/HistorySequenceDiagram.svg" width="600" />
 
-**Note:** The lifeline for `HistoryCommand` actually ends at the destroy marker (X), but due to a limitation in PlantUML, the dotted lifeline continues downwards.
+**Note:** The lifeline for `CommandContext` and `HistoryCommand` actually ends at the destroy marker (X), but due to a limitation in PlantUML, the dotted lifeline continues downwards.
 
 
 ### Wishlist Feature
@@ -632,6 +640,11 @@ This is to support fuzzy arguments in certain commands to make it faster for use
 * Input of "sha" matches all 2 keywords, as we cannot determine which it is, an exception is thrown.
 * Input of "shar" matches "shard", thus the user probably intended to enter the string "shard".
 
+**Alternatives considered**
+
+For handling typos, a metric called the "Levenshtein distance" was considered to measure
+the similarity of the strings. However, it was not adopted due to its relative complexity.
+That said, "Levenshtein distance" remains a potential nice-to-have feature for future enhancement.
 
 ## Appendix: Product Scope
 ### Target User Profile

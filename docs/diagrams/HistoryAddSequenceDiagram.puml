@@ -1,0 +1,59 @@
+@startuml
+!include Style.puml
+
+
+participant ":CardsHistory" as CardsHistory
+participant ":CardHistoryEntry" as CardHistoryEntry
+
+-> CardsHistory : add(previous: Card, current: Card)
+
+activate CardsHistory
+
+create CardHistoryEntry
+CardsHistory -> CardHistoryEntry : new CardHistoryEntry(previous, current)
+activate CardHistoryEntry
+
+
+alt previous == null && current != null
+    CardHistoryEntry -[hidden]-> CardHistoryEntry
+    note right: Set to CardHistoryType.ADDED
+else previous != null && current == null
+    CardHistoryEntry -[hidden]-> CardHistoryEntry
+    note right: Set to CardHistoryType.REMOVED
+else else
+    CardHistoryEntry -> CardHistoryEntry : getChangedQuantity()
+    activate CardHistoryEntry
+    CardHistoryEntry --> CardHistoryEntry : changedQuantity
+    deactivate CardHistoryEntry
+
+    alt changedQuantity > 0
+        CardHistoryEntry -[hidden]-> CardHistoryEntry
+        note right: Set to CardHistoryType.ADDED
+    else changedQuantity < 0
+        CardHistoryEntry -[hidden]-> CardHistoryEntry
+        note right: Set to CardHistoryType.REMOVED
+    else else
+        CardHistoryEntry -[hidden]-> CardHistoryEntry
+        note right: Set to CardHistoryType.MODIFIED
+    end
+end
+
+
+
+CardHistoryEntry --> CardsHistory
+deactivate CardHistoryEntry
+
+
+CardsHistory -[hidden]-> CardsHistory
+
+CardsHistory -> CardsHistory : add(cardHistoryEntry)
+activate CardsHistory
+CardsHistory --> CardsHistory
+deactivate CardsHistory
+
+
+<-- CardsHistory
+deactivate CardsHistory
+
+
+@enduml
