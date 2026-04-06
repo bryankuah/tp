@@ -2,7 +2,7 @@ package seedu.cardcollector.command;
 
 import seedu.cardcollector.card.Card;
 import seedu.cardcollector.card.CardsList;
-import seedu.cardcollector.Ui;
+import seedu.cardcollector.ui.Ui;
 
 public class AcquiredCommand extends Command {
 

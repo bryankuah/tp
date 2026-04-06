@@ -17,6 +17,7 @@ import seedu.cardcollector.command.CommandContext;
 import seedu.cardcollector.command.UploadCommand;
 import seedu.cardcollector.command.DownloadCommand;
 import seedu.cardcollector.command.UndoUploadCommand;
+import seedu.cardcollector.ui.Ui;
 
 public class StorageTest {
     @TempDir

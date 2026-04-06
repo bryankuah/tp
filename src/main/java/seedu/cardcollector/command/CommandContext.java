@@ -2,7 +2,7 @@ package seedu.cardcollector.command;
 
 import seedu.cardcollector.card.CardsList;
 import seedu.cardcollector.Storage;
-import seedu.cardcollector.Ui;
+import seedu.cardcollector.ui.Ui;
 import seedu.cardcollector.UploadUndoState;
 import java.util.Stack;
 

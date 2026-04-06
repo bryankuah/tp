@@ -1,4 +1,4 @@
-package seedu.cardcollector;
+package seedu.cardcollector.ui;
 
 import seedu.cardcollector.card.Card;
 import seedu.cardcollector.card.CardFieldChange;
