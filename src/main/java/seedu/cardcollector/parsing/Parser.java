@@ -99,15 +99,19 @@ public class Parser {
     private static final String KEYWORD_CLEAR_COMMAND = "clear";
 
     private static final String[] USAGE_REORDER_COMMAND = {
-        "reorder CRITERIA [asc|desc]",
-        "reorder price desc",
-        "wishlist reorder name asc"
+        "reorder CRITERIA [ascending | descending]" +
+                System.lineSeparator() +
+                "where CRITERIA = index | name | quantity | price | set | rarity | condition | language" +
+                " | number | note | added | modified | removed",
+        "reorder price",
+        "wishlist reorder name descending"
     };
 
     private static final String[] USAGE_LIST_COMMAND = {
-        "list [NUMBER | all] [index | name | quantity | price |" +
-                " set | rarity | condition | language | number | note | added | modified | removed] " +
-                "[ascending | descending]",
+        "list [NUMBER | all] [CRITERIA] [ascending | descending]" +
+                System.lineSeparator() +
+                "where CRITERIA = index | name | quantity | price | set | rarity | condition | language" +
+                " | number | note | added | modified | removed",
         "list",
         "list 50 quantity ascending"
     };
@@ -475,12 +479,16 @@ public class Parser {
         SplitTokenizer tokenizer = new SplitTokenizer(REGEX_WHITESPACES);
         tokenizer.tokenize(arguments);
 
+        if (tokenizer.getNumTokens() > 3) {
+            throw new ParseInvalidArgumentException("Too many arguments", USAGE_LIST_COMMAND);
+        }
+
         String maxDisplayCountString = tokenizer.getString(0);
         String sortCriteriaString = tokenizer.getString(1);
         String isDescendingString = tokenizer.getString(2);
 
         int maxDisplayCount = getMaxDisplayCount(maxDisplayCountString, USAGE_LIST_COMMAND);
-        CardSortCriteria sortCriteria = getSortCriteria(sortCriteriaString);
+        CardSortCriteria sortCriteria = getSortCriteria(sortCriteriaString, null, USAGE_LIST_COMMAND);
         boolean isDescending = getIsDescending(isDescendingString, false, USAGE_LIST_COMMAND);
 
         return new ListCommand(sortCriteria, maxDisplayCount, isDescending);
@@ -630,7 +638,7 @@ public class Parser {
             return Disambiguator.disambiguate(map, isDescendingString);
         } catch (IllegalArgumentException e) {
             throw new ParseInvalidArgumentException(
-                    "Unknown sorting order argument! " + e.getMessage(), usage);
+                    "Unknown sorting direction! " + e.getMessage(), usage);
         }
     }
 
@@ -654,7 +662,7 @@ public class Parser {
                     CardHistoryType.class, CardHistoryType::getKeyword, historyTypeString);
         } catch (IllegalArgumentException e) {
             throw new ParseInvalidArgumentException(
-                    "Unknown history argument! " + e.getMessage(), USAGE_HISTORY_COMMAND);
+                    "Unknown history type! " + e.getMessage(), USAGE_HISTORY_COMMAND);
         }
     }
 
@@ -663,22 +671,25 @@ public class Parser {
      * Argument matching is intentionally fuzzy for fast usage.
      *
      * @param sortCriteriaString The string to parse, may be null or blank.
+     * @param usage The command usage information array, used for error messaging
+     *              when an invalid argument is provided.
      * @return Returns the sort criteria.
      * @throws ParseInvalidArgumentException If the input string is not null and not blank,
      *                                       but the disambiguation fails.
      */
-    private static CardSortCriteria getSortCriteria(String sortCriteriaString)
+    private static CardSortCriteria getSortCriteria(
+            String sortCriteriaString, CardSortCriteria[] exclusion, String[] usage)
             throws ParseInvalidArgumentException {
         if (sortCriteriaString == null) {
             return CardSortCriteria.INDEX;
         }
 
         try {
-            return Disambiguator.disambiguate(
-                    CardSortCriteria.class, CardSortCriteria::getKeyword, sortCriteriaString);
+            return Disambiguator.disambiguate(CardSortCriteria.class,
+                    CardSortCriteria::getKeyword, sortCriteriaString);
         } catch (IllegalArgumentException e) {
             throw new ParseInvalidArgumentException(
-                    "Unknown list argument! " + e.getMessage(), USAGE_LIST_COMMAND);
+                    "Unknown sorting criteria! " + e.getMessage(), usage);
         }
     }
 
@@ -693,6 +704,10 @@ public class Parser {
     private Command handleHistory(String arguments) throws ParseInvalidArgumentException {
         SplitTokenizer tokenizer = new SplitTokenizer(REGEX_WHITESPACES);
         tokenizer.tokenize(arguments);
+
+        if (tokenizer.getNumTokens() > 3) {
+            throw new ParseInvalidArgumentException("Too many arguments", USAGE_HISTORY_COMMAND);
+        }
 
         String maxDisplayCountString = tokenizer.getString(0);
         String historyTypeString = tokenizer.getString(1);
@@ -943,53 +958,24 @@ public class Parser {
                     USAGE_REORDER_COMMAND);
         }
 
-        String[] parts = arguments.trim().split(REGEX_WHITESPACES);
-        String criteriaStr = parts[0].toLowerCase();
+        SplitTokenizer tokenizer = new SplitTokenizer(REGEX_WHITESPACES);
+        tokenizer.tokenize(arguments);
 
-        CardSortCriteria criteria;
-        switch (criteriaStr) {
-        case "name":
-            criteria = CardSortCriteria.NAME;
-            break;
-        case "price":
-            criteria = CardSortCriteria.PRICE;
-            break;
-        case "quantity":
-            criteria = CardSortCriteria.QUANTITY;
-            break;
-        case "lastadded":
-            criteria = CardSortCriteria.ADDED;
-            break;
-        case "lastmodified":
-            criteria = CardSortCriteria.MODIFIED;
-            break;
-        default:
-            throw new ParseInvalidArgumentException(
-                    "Invalid criteria. Valid options: name, price, quantity, lastadded, lastmodified",
-                    USAGE_REORDER_COMMAND);
+        if (tokenizer.getNumTokens() > 2) {
+            throw new ParseInvalidArgumentException("Too many arguments", USAGE_REORDER_COMMAND);
         }
 
-        boolean isAscending = true; // default = ascending
-        if (parts.length > 1) {
-            String orderStr = parts[1].toLowerCase();
-            if (orderStr.equals("asc") || orderStr.equals("ascending")) {
-                isAscending = true;
-            } else if (orderStr.equals("desc") || orderStr.equals("descending")) {
-                isAscending = false;
-            } else {
-                throw new ParseInvalidArgumentException(
-                        "Invalid order. Use 'asc' or 'desc'",
-                        USAGE_REORDER_COMMAND);
-            }
-        }
+        String sortCriteriaString = tokenizer.getString(0);
+        String isDescendingString = tokenizer.getString(1);
 
-        if (parts.length > 2) {
-            throw new ParseInvalidArgumentException(
-                    "Too many arguments for reorder command",
-                    USAGE_REORDER_COMMAND);
-        }
+        CardSortCriteria[] exclusion = new CardSortCriteria[]{
+            CardSortCriteria.INDEX // Exclude index as list is already stored in index order
+        };
+        CardSortCriteria sortCriteria = getSortCriteria(sortCriteriaString, exclusion, USAGE_REORDER_COMMAND);
+        boolean isDescending = getIsDescending(isDescendingString, false, USAGE_REORDER_COMMAND);
 
-        return new ReorderCommand(criteria, isAscending);
+
+        return new ReorderCommand(sortCriteria, !isDescending);
     }
 
     private Command handleUndo(String arguments) throws ParseInvalidArgumentException {

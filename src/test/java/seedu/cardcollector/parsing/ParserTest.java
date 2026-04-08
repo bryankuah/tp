@@ -11,6 +11,7 @@ import seedu.cardcollector.command.HistoryCommand;
 import seedu.cardcollector.command.Command;
 import seedu.cardcollector.command.DownloadCommand;
 import seedu.cardcollector.command.FindCommand;
+import seedu.cardcollector.command.ReorderCommand;
 import seedu.cardcollector.command.UploadCommand;
 import seedu.cardcollector.command.HelpCommand;
 import seedu.cardcollector.command.UndoUploadCommand;
@@ -173,6 +174,11 @@ public class ParserTest {
                 ParseInvalidArgumentException.class,
                 () -> parser.parse("history all added zz")
         );
+
+        assertThrows(
+                ParseInvalidArgumentException.class,
+                () -> parser.parse("history all added ascending toomanyargument")
+        );
     }
 
     @Test
@@ -208,6 +214,21 @@ public class ParserTest {
 
         Command command8 = parser.parse("history 5 entire descend");
         assertInstanceOf(HistoryCommand.class, command8);
+    }
+
+    //@@author HX2003
+    @Test
+    public void parse_reorder_success() throws
+            ParseBlankCommandException,
+            ParseInvalidArgumentException,
+            ParseUnknownCommandException {
+        Parser parser = new Parser();
+
+        Command command0 = parser.parse("reorder index");
+        assertInstanceOf(ReorderCommand.class, command0);
+
+        Command command1 = parser.parse("reorder price ascending");
+        assertInstanceOf(ReorderCommand.class, command1);
     }
 
     //@@author Simplificatedd

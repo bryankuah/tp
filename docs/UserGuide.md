@@ -66,23 +66,13 @@ Compares two cards from the same list.
 `compare 1 3`
 `wishlist compare 2 4`
 
-### Reordering the list: `reorder`
-
-Permanently reorders the stored cards in your inventory or wishlist by the chosen criteria.
-
-**Format:** `reorder CRITERIA [asc|desc]`
-
-- CRITERIA = `name` | `price` | `quantity` | `lastadded` | `lastmodified`
-
-**Examples:**
-`reorder price desc`
-`wishlist reorder name asc`
-
 ### Listing cards: `list`
 
 Displays cards in the current list in a sorted order.
 
-**Format:** `list [NUMBER | all] [index | name | quantity | price | set | rarity | condition | language | number | note | added | modified | removed] [ascending | descending]`
+**Format:** `list [NUMBER | all] [CRITERIA] [ascending | descending]`
+
+- where CRITERIA = `index` | `name` | `quantity` | `price` | `set` | `rarity` | `condition` | `language` | `number` | `note` | `added` | `modified` | `removed`
 
 **Examples:**
 `list`
@@ -90,12 +80,29 @@ Displays cards in the current list in a sorted order.
 `list 50 quantity ascending`
 
 - By default, the displayed list is sorted by index in ascending order.
-- Arguments are optional, but if specified, they must be in order.
+- Arguments are optional, but if specified, must be in order.
 - Argument matching is intentionally fuzzy for fast usage.
-- Except for index, quantity and price, all other properties are treated as strings and thus are sorted in case-insensitive lexicographical order.
-  - This includes `rarity` and `condition`, as they do not have any predefined order.
-  - This includes card `number` (not to be confused with `index` or `quantity`). Despite its name, `number` is a string identifier (e.g. "LOT-01"), not a numeric type.
+- **Sorting guide**:
+  - Except for index, quantity and price, **all** other properties are treated as strings and thus are sorted in case-insensitive lexicographical order.
+    - This includes `rarity` and `condition`, as they do not have any predefined order.
+    - This includes card `number` (not to be confused with `index` or `quantity`). Despite its name, `number` is a string identifier (e.g. "LOT-01"), not a numeric type.
 
+### Reordering the list: `reorder`
+
+Permanently reorders the stored cards in your inventory or wishlist by the chosen criteria.
+
+**Format:** `reorder CRITERIA [ascending | descending]`
+
+- where CRITERIA = `index` | `name` | `quantity` | `price` | `set` | `rarity` | `condition` | `language` | `number` | `note` | `added` | `modified` | `removed`
+
+**Examples:**
+`reorder price`
+`wishlist reorder name descending`
+
+- By default, the sorting direction is in ascending order.
+- CRITERIA argument must be specified, extra arguments if specified, must be in order.
+- Argument matching is intentionally fuzzy for fast usage.
+- Refer to the [sorting guide](#listing-cards-list) under `list` for more information for how the various sorting criterias works.
 
 ### Filtering cards: `filter`
 
@@ -298,7 +305,7 @@ Exits the application.
 | `add /n NAME /q QTY /p PRICE`  | Add card                             |
 | `edit INDEX [...]`             | Edit card                            |
 | `compare INDEX1 INDEX2`        | Compare cards                        |
-| `reorder CRITERIA [asc\|desc]` | Reorder list                         |
+| `reorder CRITERIA [...]`       | Reorder list                         |
 | `removeindex INDEX`            | Remove by index                      |
 | `removename NAME`              | Remove by name                       |
 | `undo`                         | Undo the most recent add/remove/edit |

@@ -32,7 +32,7 @@ public class Ui {
     private static final String FORMAT_INVALID_ARGUMENT =
             "%1$s%n%n";
     private static final String FORMAT_INVALID_ARGUMENT_SYNTAX_USAGE =
-            "Usage: \"%1$s\"%n";
+            "Usage: %1$s%n";
     private static final String FORMAT_INVALID_ARGUMENT_EXAMPLE_USAGE =
             "Example: \"%1$s\"%n";
     

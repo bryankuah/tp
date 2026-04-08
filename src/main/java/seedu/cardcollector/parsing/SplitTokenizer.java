@@ -45,4 +45,13 @@ public class SplitTokenizer {
 
         return null;
     }
+
+    /**
+     * Returns the number of tokens in the tokenized list.
+     *
+     * @return The number of tokens. This value is 0 if nothing has been tokenized yet.
+     */
+    public int getNumTokens() {
+        return tokens.size();
+    }
 }

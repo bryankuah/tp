@@ -34,14 +34,18 @@ public class HelpCommand extends Command {
                 "wishlist compare 2 4"
             }),
             new HelpTopic("reorder", List.of(), "reorder the current list by a chosen field", new String[] {
-                "reorder CRITERIA [asc|desc]",
-                "reorder price desc",
-                "wishlist reorder name asc"
+                "reorder CRITERIA [ascending | descending]" +
+                        System.lineSeparator() +
+                        "where CRITERIA = index | name | quantity | price | set | rarity | condition | language" +
+                        " | number | note | added | modified | removed",
+                "reorder price",
+                "wishlist reorder name descending"
             }),
             new HelpTopic("list", List.of(), "list cards in a sorted order", new String[] {
-                "list [NUMBER | all] [index | name | quantity | price " +
-                        "| set | rarity | condition | language | number | note | added | modified | removed] " +
-                        "[ascending | descending]",
+                "list [NUMBER | all] [CRITERIA] [ascending | descending]" +
+                        System.lineSeparator() +
+                        "where CRITERIA = index | name | quantity | price | set | rarity | condition | language" +
+                        " | number | note | added | modified | removed",
                 "list",
                 "list 50 quantity ascending"
             }),
