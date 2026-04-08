@@ -79,7 +79,7 @@ Displays cards in the current list in a sorted order.
 `list all`
 `list 50 quantity ascending`
 
-- By default, the displayed list is sorted by index in ascending order.
+- By default, up to 15 cards is displayed, sorted by index in ascending order. You can change the number of cards to be displayed.
 - Arguments are optional, but if specified, must be in order.
 - Argument matching is intentionally fuzzy for fast usage.
 - **Sorting guide**:
