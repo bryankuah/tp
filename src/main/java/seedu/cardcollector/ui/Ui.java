@@ -65,6 +65,12 @@ public class Ui {
 
     private static final String FORMAT_LIST_RECORD =
             "[index = %1$s] %2$s%n";
+    private static final String FORMAT_LIST_RECORD_WITH_LAST_ADDED =
+            "[index = %1$s] [last added = %2$s] %3$s%n";
+    private static final String FORMAT_LIST_RECORD_WITH_LAST_MODIFIED =
+            "[index = %1$s] [last modified = %2$s] %3$s%n";
+    private static final String FORMAT_LIST_RECORD_WITH_LAST_REMOVED =
+            "[index = %1$s] [last removed = %2$s] %3$s%n";
     private static final String FORMAT_LIST_DISPLAY_NO_RECORD =
             "Your card list is empty!";
     private static final String FORMAT_LIST_DISPLAY_ALL_RECORDS_ASCENDING =
@@ -78,7 +84,7 @@ public class Ui {
 
     private static final int DISPLAY_DEFAULT_LIMIT = 15;
     private static final String DISPLAY_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
-
+    private static final String DISPLAY_DATE_TIME_PLACEHOLDER_FORMAT = "-------------------";
 
     private final PrintStream out;
     private final Scanner scanner;
@@ -281,6 +287,21 @@ public class Ui {
     }
 
     //@@author HX2003
+    /**
+     * Prints a card record with a date specified.
+     *
+     * @param format Format string used for printing.
+     * @param displayIndex The human-readable index of the card in the list.
+     * @param instant The specified date.
+     * @param card The card.
+     */
+    private void printListRecordWithDate(String format, int displayIndex, Instant instant, Card card) {
+        String date = (instant != null)
+                ? dateTimeFormatter.format(instant)
+                : DISPLAY_DATE_TIME_PLACEHOLDER_FORMAT;
+        out.printf(format, displayIndex, date, card);
+    }
+
     public void printList(CardsList list, CardSortCriteria sortCriteria,
                           int maxDisplayCount, boolean isDescending) {
         printBorder();
@@ -289,10 +310,23 @@ public class Ui {
         ArrayList<Card> sortedCards = CardSorter.sort(cards, sortCriteria, maxDisplayCount,
                 DISPLAY_DEFAULT_LIMIT, isDescending);
 
-        printListRecordCount(list, list.getSize(), sortedCards.size(), isDescending, sortCriteria.getKeyword());
+        printListRecordCount(list.getSize(), sortedCards.size(), isDescending, sortCriteria.getKeyword());
 
         for (Card card : sortedCards) {
-            out.printf(FORMAT_LIST_RECORD, list.getIndex(card) + 1, card);
+            int displayIndex = list.getIndex(card) + 1;
+
+            if (sortCriteria == CardSortCriteria.ADDED) {
+                printListRecordWithDate(FORMAT_LIST_RECORD_WITH_LAST_ADDED,
+                        displayIndex, card.getLastAdded(), card);
+            } else if (sortCriteria == CardSortCriteria.MODIFIED) {
+                printListRecordWithDate(FORMAT_LIST_RECORD_WITH_LAST_MODIFIED,
+                        displayIndex, card.getLastModified(), card);
+            } else if (sortCriteria == CardSortCriteria.REMOVED) {
+                printListRecordWithDate(FORMAT_LIST_RECORD_WITH_LAST_REMOVED,
+                        displayIndex, card.getLastRemoved(), card);
+            } else {
+                out.printf(FORMAT_LIST_RECORD, displayIndex, card);
+            }
         }
 
         printBorder();
@@ -310,14 +344,10 @@ public class Ui {
      * @param isDescending If records are sorted in descending order.
      * @param sortCriteriaString The criteria by which records are sorted.
      */
-    private void printListRecordCount(CardsList list, int originalSize, int limitedSize,
+    private void printListRecordCount(int originalSize, int limitedSize,
                                       boolean isDescending, String sortCriteriaString) {
         if (originalSize == 0) {
-            if (list.isWishlist()) {
-                out.println("Your wishlist is empty!");
-            } else {
-                out.println(FORMAT_LIST_DISPLAY_NO_RECORD);
-            }
+            out.println(FORMAT_LIST_DISPLAY_NO_RECORD);
             return;
         }
 
