@@ -318,6 +318,8 @@ public void printEdited(CardsList inventory, int index) {
 
 The 'undo' command allows users to reverse the most recent [reversible command](#reversible-commands) by popping it from the `commandHistory` stack and calling its `undo(context)` method.
 
+Note: Using `undo` twice in a row reverses the last 2 reversible commands instead of reversing the `undo`
+
 #### Architecture-level
 
 1. `Parser` produces a `UndoCommand` and then `CardCollector` calls `execute(context)`
