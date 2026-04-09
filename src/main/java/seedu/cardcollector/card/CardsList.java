@@ -534,7 +534,9 @@ public class CardsList {
     public void restoreCard(int index, Card card) {
         assert index >= 0 && index < cards.size() : "Index out of bounds for restore";
         assert card != null : "Card to restore should not be null";
+        Card current = cards.get(index).copy();
         cards.set(index, card.copy());
+        this.history.add(current, card.copy());
     }
 
     public boolean isWishlist() {
