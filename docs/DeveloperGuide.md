@@ -634,12 +634,15 @@ The exception to this is the `clear` command which clears the history
 - For each history entry, a deep copy of the previous and current card is stored.
 - 3 category types were devised. They are **mutually exclusive**
   to ensure they can be listed in a chronological sequence without duplicated entries representing the same event.
-  - An `ADDED` entry occurs when a new or existing card is added, or when the edit command increases the quantity of the card.
+  - An `ADDED` entry occurs when a new card is added, or when a duplicate card with quantity more than 0 is added, or when the edit command increases the quantity of the card.
   - A `MODIFIED` entry occurs when a card value is changed, **excluding** any changes to the quantity of the card.
   - A `REMOVED` entry occurs when a card is removed, or when the edit command decreases the quantity of the card.
 
   The `ENTIRE` value is a special enum constant used **only for filtering operations**. It is never assigned to individual history entries;
   instead, it is only used to instruct the system to display entries from all 3 categories when listing history.
+  
+- It is possible for `ADDED` or `REMOVED` entry to have a quantity change of 0, since it is possible to add a card with a quantity of 0.
+- There are 2 separate histories, one for the main list and other for the wishlist.
 
 #### Alternatives considered
 - A more compact way to store the history, is to track what changed instead of storing two copies of the card.

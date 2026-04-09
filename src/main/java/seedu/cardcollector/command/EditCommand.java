@@ -58,7 +58,16 @@ public class EditCommand extends Command {
 
     @Override
     public CommandResult undo(CommandContext context) {
-        context.getTargetList().restoreCard(targetIndex, originalCard);
+        context.getTargetList().editCard(targetIndex,
+                originalCard.getName(),
+                originalCard.getQuantity(),
+                originalCard.getPrice(),
+                originalCard.getCardSet(),
+                originalCard.getRarity(),
+                originalCard.getCondition(),
+                originalCard.getLanguage(),
+                originalCard.getCardNumber(),
+                originalCard.getNote());
         context.getUi().printUndoSuccess(context.getTargetList());
         return new CommandResult(false);
     }

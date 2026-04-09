@@ -220,7 +220,7 @@ Displays a historical audit log of when cards were added, modified, or removed.
 
 - Arguments are optional, but if specified, they must be in order.
 - Argument matching is intentionally fuzzy for fast usage.
-- An `added` entry occurs when a new or existing card is added, or when the edit command increases the quantity of the card.
+- An `added` entry occurs when a new card is added, or when a duplicate card with quantity more than 0 is added, or when the edit command increases the quantity of the card.
 - A `modified` entry occurs when a card value is changed, **excluding** any changes to the quantity of the card.
 - A `removed` entry occurs when a card is removed, or when the edit command decreases the quantity of the card.
 - The `undo` command does not revert the history, but rather adds to the history.

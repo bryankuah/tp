@@ -40,13 +40,24 @@ public class CardsHistory {
         return historyListCopy;
     }
 
+    /**
+     * Creates a history entry from a previous and current card and adds it to the history.
+     *
+     * @param previous The card before the change.
+     * @param current The card after the change.
+     */
     public void add(Card previous, Card current) {
         CardHistoryEntry entry = new CardHistoryEntry(previous, current);
         historyList.add(entry);
     }
 
-    public void add(CardHistoryEntry cardHistoryEntry) {
-        historyList.add(cardHistoryEntry);
+    /**
+     * Adds the given history entry to the history.
+     *
+     * @param entry The history entry to add.
+     */
+    public void add(CardHistoryEntry entry) {
+        historyList.add(entry);
     }
 
     public int getSize() {

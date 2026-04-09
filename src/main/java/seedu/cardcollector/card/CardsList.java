@@ -31,15 +31,15 @@ public class CardsList {
 
         Instant currentInstant = Instant.now();
 
-        for (Card existingCard : cards) {
+        for (int i = 0; i < cards.size(); i++) {
+            Card existingCard = cards.get(i);
             if (isSameCardVariant(existingCard, newCard)) {
-                Card originalCard = existingCard.copy();
-
+                // For duplicate handling, we reuse the editCard method,
+                // which gracefully handle edge cases,
+                // for example when new card has quantity = 0, which means no change occurred.
                 int updatedQuantity = existingCard.getQuantity() + newCard.getQuantity();
-                existingCard.setQuantity(updatedQuantity);
-                existingCard.setLastAdded(currentInstant);
-
-                this.history.add(originalCard, existingCard.copy());
+                editCard(i, null, updatedQuantity, null, null,
+                        null, null, null, null, null);
 
                 assert cards.contains(existingCard) : "Updated card must still be in the list";
                 return;
@@ -48,9 +48,9 @@ public class CardsList {
         int sizeBefore = cards.size();
 
         newCard.setLastAdded(currentInstant);
-        cards.add(newCard);
+        history.add(null, newCard.copy());
 
-        this.history.add(null, newCard.copy());
+        cards.add(newCard);
 
         assert cards.size() == sizeBefore + 1 : "List size should increment by 1 after add";
         assert cards.get(cards.size() - 1).equals(newCard) : "Latest card should be at the end";
@@ -60,8 +60,11 @@ public class CardsList {
         assert card != null : "Card to re-insert should not be null";
         assert index >= 0 && index <= cards.size() : "Index out of bounds for re-insertion";
 
+        Instant currentInstant = Instant.now();
+
+        card.setLastAdded(currentInstant);
+        history.add(null, card.copy());
         cards.add(index, card);
-        this.history.add(null, card.copy());
     }
 
     public void removeCardByIndex(int index) {
@@ -79,9 +82,9 @@ public class CardsList {
             Card removed = cards.remove(index);
 
             Instant currentInstant = Instant.now();
-            removed.setLastRemoved(currentInstant);
 
-            this.history.add(removed.copy(),  null);
+            removed.setLastRemoved(currentInstant);
+            history.add(removed.copy(),  null);
 
             assert cards.size() == sizeBefore - 1 : "Size should decrease after removal";
         }
@@ -98,9 +101,9 @@ public class CardsList {
                 Card removed = cards.remove(i);
 
                 Instant currentInstant = Instant.now();
-                removed.setLastRemoved(currentInstant);
 
-                this.history.add(removed.copy(),  null);
+                removed.setLastRemoved(currentInstant);
+                history.add(removed.copy(),  null);
 
                 assert cards.size() == sizeBefore - 1 : "Size should decrease after removal";
 
@@ -354,11 +357,13 @@ public class CardsList {
             if (newQuantity > previousQuantity) {
                 quantityChanged = true;
                 card.setQuantity(newQuantity);
+
                 card.setLastAdded(currentInstant);
                 history.add(originalCard, card.copy());
             } else if (newQuantity < previousQuantity) {
                 quantityChanged = true;
                 card.setQuantity(newQuantity);
+
                 card.setLastRemoved(currentInstant);
                 history.add(originalCard, card.copy());
             }
@@ -526,14 +531,6 @@ public class CardsList {
         }
 
         assert cards.size() > 0 : "List should not be empty if it wasn't before reorder";
-    }
-
-    public void restoreCard(int index, Card card) {
-        assert index >= 0 && index < cards.size() : "Index out of bounds for restore";
-        assert card != null : "Card to restore should not be null";
-        Card current = cards.get(index).copy();
-        cards.set(index, card.copy());
-        this.history.add(current, card.copy());
     }
 
     public boolean isWishlist() {
