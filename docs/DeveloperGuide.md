@@ -105,6 +105,8 @@ The architecture of CardCollector consists of three main components:
     - If not found, it calls `targetList.addCard(newCard)` to append the card and records the new index for `undo()`.
 5. `CardList.addCard` adds the new card and sets the timestamp of `lastAdded`。
 
+<img src="images/AddCommandSequenceDiagram.svg" width="900" />  
+
 #### Implementation
 1. The core logic is in `CardsList.java`:  
 ```java

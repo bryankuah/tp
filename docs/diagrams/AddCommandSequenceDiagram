@@ -1,0 +1,76 @@
+@startuml
+!include Style.puml
+
+participant ":CardCollector" as CardCollector
+participant ":CommandContext" as CommandContext COMMANDCONTEXT_COLOR_PRIMARY
+participant ":Parser" as Parser PARSER_COLOR_PRIMARY
+participant ":AddCommand" as AddCommand COMMAND_COLOR_PRIMARY
+participant ":CardsList" as CardsList CARDS_COLOR_PRIMARY
+participant ":Ui" as Ui UI_COLOR_PRIMARY
+
+-> CardCollector : input "add /n NAME /q QTY /p PRICE ..."
+
+activate CardCollector
+CardCollector -> Parser : parse(input)
+activate Parser
+
+create AddCommand
+Parser -> AddCommand
+activate AddCommand
+AddCommand --> Parser : command
+deactivate AddCommand
+
+Parser --> CardCollector : command
+deactivate Parser
+CardCollector -[hidden]-> Parser
+
+create CommandContext
+CardCollector -> CommandContext
+activate CommandContext
+CommandContext --> CardCollector : context
+deactivate CommandContext
+
+CardCollector -> AddCommand : execute(context)
+activate AddCommand
+
+AddCommand -> CommandContext : getTargetList()
+activate CommandContext
+CommandContext --> AddCommand : inventory (CardsList)
+deactivate CommandContext
+
+note right of AddCommand : builds Card object\nusing Card.Builder
+
+alt duplicate card found (same name, price, fields)
+    AddCommand -> CardsList : editCard(index, newQuantity, ...)
+    activate CardsList
+    CardsList --> AddCommand
+    deactivate CardsList
+else no duplicate found
+    AddCommand -> CardsList : addCard(card)
+    activate CardsList
+    CardsList --> AddCommand
+    deactivate CardsList
+end
+
+AddCommand -> Ui : printAdded(inventory)
+activate Ui
+Ui --> AddCommand
+deactivate Ui
+
+AddCommand --> CardCollector : commandResult
+deactivate AddCommand
+
+CardCollector -> CommandContext : getCommandHistory().push(addCommand)
+activate CommandContext
+CommandContext --> CardCollector
+deactivate CommandContext
+
+CardCollector -> CardCollector : saveState()
+
+<-- CardCollector
+deactivate CardCollector
+
+destroy CommandContext
+destroy AddCommand
+
+@enduml
