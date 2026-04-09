@@ -146,9 +146,9 @@ The first string is usually the usage format, while strings onwards are example 
 2. `Parser.handleAdd()` checks for the 3 required flags (`/n`,`/q`,`/p`), then extracts the flag value and constructs an `AddCommand`
 3. `CardCollector` then creates a `CommandContext` and calls `command.execute(context)`.
 4. `AddCommand.execute()` scans the target list for an existing card with identical name, price, and metadata fields.   
-    - If found, it calls `targetList.editCard()` to increment the quantity, and records the index for `undo()`.
-    - If not found, it calls `targetList.addCard(addedCard)` to append the card and records the new index for `undo()`.
-5. `CardList.addCard` adds the new card and sets the timestamp of `lastAdded`。
+    - If found, it calls `targetList.editCard()` to increment the quantity, records the index, and set wasMerged = true for  `undo()`.
+    - If not found, it calls `targetList.addCard(Card)` to append the card and records the new index for `undo()`.
+5. `CardsList.addCard` sets the `lastAdded` timestamp on the new card and logs the addition to `CardsHistory`.
 
 <img src="images/AddCommandSequenceDiagram.svg" width="900" />  
 
@@ -322,9 +322,9 @@ The 'undo' command allows users to reverse the most recent [reversible command](
 
 1. `Parser` produces a `UndoCommand` and then `CardCollector` calls `execute(context)`
 2. `UndoCommand` retrieves the `commandHistory` stack from `context`.
-  - If empty, it prints "Nothing to Undo" and returns immediately.
-  - Otherwise, it calls `history.pop()` to get the last reversible command and calls `lastCommand.undo(context)`
-3. The previous command performs its targeted reversal depending on the command to undo (refer to alt frames in sequence diagram).
+   - If empty, it prints "Nothing to Undo" and returns immediately.
+   - Otherwise, it calls `history.pop()` to get the last reversible command and calls `lastCommand.undo(context)`
+3. The previous command performs its targeted reversal depending on the command to undo 
 4. `ui.printUndoSuccess(list)` is called and `CommandResult(isExit=false)` is returned and `CardCollector` calls `storage.save()`
 
 #### Implementation (key code snippets)
@@ -381,7 +381,7 @@ return new CommandResult(false);
     if (changed) {
         ui.printEdited(inventory, targetIndex);
     } else {
-        ui.printNotEdited(inventory);
+        ui.printNotEdited();
     }
     ```
   `EditCommand.undo()` then restores all fields by calling `editCard` with the saved old values:
@@ -395,12 +395,46 @@ return new CommandResult(false);
 
 - `RemoveCardByIndexCommand` or `RemoveCardByNameCommand`: saves the card and its index
     ```java
-    this.removedCard = inventory.getCard(targetIndex);
+    this.removedCard = inventory.getCard(targetIndex).copy();
     this.removedIndex = targetIndex;
     ```
  - `RemoveCardByIndexCommand.undo()` or `RemoveCardByNameCommand.undo()` then re-inserts the card at the same position
     ```java
     context.getTargetList().addCardAtIndex(removedIndex, removedCard);
+    ```
+ - `ClearCommand`: saves a deep copy of the entire list before clearing
+    ```java
+    this.previousState = targetList.deepCopy();
+    targetList.clear();
+    ```
+
+    `ClearCommand.undo()` then restores the entire list including history:
+    ```java
+    public CommandResult undo(CommandContext context) {
+        var targetList = context.getTargetList();
+        targetList.replaceWith(previousState);
+        context.getUi().printUndoSuccess(targetList);
+        return new CommandResult(false);
+    }
+    ```
+- `TagCommand`: sets `isReversible` only if tag actually changes, then reverses the operation
+    ```java
+    boolean changed = switch (operation) {
+        case ADD -> cards.addTag(targetIndex, tag);
+        case REMOVE -> cards.removeTag(targetIndex, tag);
+    };
+        this.isReversible = changed;
+    ```
+    `TagCommand.undo()` reverses by doing the opposite operation:
+    ```java
+    public CommandResult undo(CommandContext context) {
+        switch (operation) {
+            case ADD -> context.getTargetList().removeTag(targetIndex, tag);
+            case REMOVE -> context.getTargetList().addTag(targetIndex, tag);
+        }
+        context.getUi().printUndoSuccess(context.getTargetList());
+        return new CommandResult(false);
+    }
     ```
 
 #### Sequence Diagram
@@ -701,7 +735,7 @@ public void printList(CardsList list) {
 <img src="images/WishlistSequenceDiagram.svg" width="900" />
 
 #### Design decisions
-- Two separate `CardsList` objects inside `CardCollector` because behaviour is identical.
+- Two separate `CardsList` objects inside `CardCollector` because behavior is identical.
 - All routing logic is confined to `CardCollector.run()` so no command classes or Parser needed changes.
 - Each list keeps its own history, so `history` and `history modified` work independently.
 
@@ -900,7 +934,7 @@ public CommandResult execute(CommandContext context) {
 ### Mainstream OS
 - Windows, Linux, Unix
 ### Reversible Commands
-- `add`, `removeindex`,`removename`,`edit`
+- - `AddCommand`, `EditCommand`, `RemoveCardByIndexCommand`, `RemoveCardByNameCommand`, `ClearCommand`, `TagCommand`
 
 ## Appendix: Instructions For Manual Testing
 Given below are instructions to test the app manually.
