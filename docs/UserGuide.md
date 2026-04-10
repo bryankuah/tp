@@ -10,7 +10,7 @@ language, card number), and timestamps used by history commands.
 
 1. Ensure that **Java 17** is installed.
 2. Download the latest `CardCollector.jar` release from our GitHub repository.
-3. Ensure that the jar file is placed in an empty folder.
+3. Move the jar file to an empty folder.
 4. Open a command terminal, navigate to the folder where you placed the jar file, 
    and run `java -jar CardCollector.jar`.
 5. You can start using the application.
