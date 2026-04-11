@@ -4,12 +4,27 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.StringJoiner;
 
+/**
+ * Records a change between two cards (previous and current).
+ * Determines the type of change (ADDED, REMOVED, MODIFIED),
+ * based on nullity, quantity, or other fields difference.
+ * <p>
+ * Note that a single {@code CardHistoryEntry} is unable to fully record
+ * when both quantity and other fields changes.
+ */
 public class CardHistoryEntry {
     private final CardHistoryType cardHistoryType;
 
     private final Card previous;
     private final Card current;
 
+    /**
+     * Creates a history entry from a previous and current card state.
+     * Both parameters may be null to represent creation or deletion.
+     *
+     * @param previous The card before the change (can be null).
+     * @param current  The card after the change (can be null).
+     */
     CardHistoryEntry(Card previous, Card current) {
         if (previous != null && current != null) {
             assert previous != current : "Cards in history should not share the same reference";
@@ -42,6 +57,11 @@ public class CardHistoryEntry {
         }
     }
 
+    /**
+     * Returns a deep copy of this history entry.
+     *
+     * @return A new CardHistoryEntry with copied card objects.
+     */
     public CardHistoryEntry copy() {
         Card copyOfPrevious = null;
         Card copyOfCurrent = null;
@@ -57,14 +77,29 @@ public class CardHistoryEntry {
         return new CardHistoryEntry(copyOfPrevious, copyOfCurrent);
     }
 
+    /**
+     * Returns the previous card state.
+     *
+     * @return The card before the change, or null if the card was newly added.
+     */
     public Card getPrevious() {
         return previous;
     }
 
+    /**
+     * Returns the current card state.
+     *
+     * @return The card after the change, or null if the card was removed.
+     */
     public Card getCurrent() {
         return current;
     }
 
+    /**
+     * Returns the most recent non-null card.
+     *
+     * @return The most recent non-null card.
+     */
     public Card getMostRecent() {
         Card current = getCurrent();
 
@@ -74,10 +109,21 @@ public class CardHistoryEntry {
 
         return previous;
     }
+
+    /**
+     * Returns the type of change this entry represents.
+     *
+     * @return The card history type.
+     */
     public CardHistoryType getCardHistoryType() {
         return cardHistoryType;
     }
 
+    /**
+     * Returns the net change in card quantity.
+     *
+     * @return An integer value of number of cards changed.
+     */
     public int getChangedQuantity() {
         int currentQuantity = 0;
         int previousQuantity = 0;
@@ -93,6 +139,12 @@ public class CardHistoryEntry {
         return currentQuantity - previousQuantity;
     }
 
+    /**
+     * Returns a map of field names to their changes,
+     * but is only applicable for MODIFIED entries.
+     *
+     * @return The changed fields with field names.
+     */
     public LinkedHashMap<String, CardFieldChange> getChangedFields() {
         assert previous != null;
         assert current != null;
