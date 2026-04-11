@@ -165,6 +165,15 @@ public class Parser {
         "upload /f backups/cardcollector.txt"
     };
 
+    /**
+     * Parses the input string and returns a created command.
+     *
+     * @param input The raw string to parse.
+     * @return The created command.
+     * @throws ParseBlankCommandException    If the input is empty or contains only whitespace.
+     * @throws ParseUnknownCommandException  If the command keyword is not recognized.
+     * @throws ParseInvalidArgumentException If the command arguments are invalid.
+     */
     public Command parse(String input) throws
             ParseBlankCommandException,
             ParseUnknownCommandException,
