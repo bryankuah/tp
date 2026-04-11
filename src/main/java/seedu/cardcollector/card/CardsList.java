@@ -10,6 +10,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Collections;
 import java.util.stream.Collectors;
+import java.util.Objects;
 
 public class CardsList {
     private final ArrayList<Card> cards;
@@ -544,6 +545,17 @@ public class CardsList {
         }
 
         assert cards.size() > 0 : "List should not be empty if it wasn't before reorder";
+    }
+
+    //@@author WeiHeng2003
+    public ArrayList<Integer> getIndicesByName (String name) {
+        ArrayList<Integer> indices = new ArrayList<>();
+        for (int i = 0; i < cards.size(); i++) {
+            if (cards.get(i).getName().equalsIgnoreCase(name)) {
+                indices.add(i);
+            }
+        }
+        return indices;
     }
 
     public boolean isWishlist() {

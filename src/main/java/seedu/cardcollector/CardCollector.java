@@ -12,6 +12,7 @@ import seedu.cardcollector.exception.ParseInvalidArgumentException;
 import seedu.cardcollector.exception.ParseUnknownCommandException;
 import seedu.cardcollector.parsing.Parser;
 import seedu.cardcollector.ui.Ui;
+import seedu.cardcollector.command.HelpCommand;
 
 public class CardCollector {
     private final Ui ui;
@@ -54,6 +55,15 @@ public class CardCollector {
                 if (isWishlistCommand) {
                     ui.printUnknownCommandWarning("wishlist");
                 }
+                continue;
+            }
+
+            // Handle: wishlist /h → show wishlist help
+            if (isWishlistCommand && parseInput.equalsIgnoreCase("/h")) {
+                Command command = HelpCommand.forKeyword("wishlist");
+                CommandContext context = new CommandContext(
+                        ui, wishlist, inventory, wishlist, storage, uploadUndoState, commandHistory);
+                command.execute(context);
                 continue;
             }
 

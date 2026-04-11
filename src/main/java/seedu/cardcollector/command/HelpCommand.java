@@ -108,6 +108,10 @@ public class HelpCommand extends Command {
             new HelpTopic("undo", List.of(), "undo the last reversible command", new String[] {
                 "undo"
             }),
+            new HelpTopic("clear", List.of(), "clear all cards from the current list", new String[] {
+                "clear",
+                "wishlist clear"
+            }),
             new HelpTopic("bye", List.of(), "exit the application", new String[] {
                 "bye"
             }),

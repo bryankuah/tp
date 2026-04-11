@@ -2,6 +2,8 @@ package seedu.cardcollector.command;
 
 import seedu.cardcollector.card.Card;
 
+import java.util.ArrayList;
+
 public class RemoveCardByNameCommand extends Command {
     private final String targetName;
     private Card removedCard;
@@ -15,25 +17,29 @@ public class RemoveCardByNameCommand extends Command {
     public CommandResult execute(CommandContext context) {
         var ui = context.getUi();
         var inventory = context.getTargetList();
+        ArrayList<Integer> matches = inventory.getIndicesByName(targetName);
 
-        for (int i = 0; i < inventory.getSize(); i++) {
-            if (inventory.getCard(i).getName().equalsIgnoreCase(targetName)) {
-                this.removedCard = inventory.getCard(i).copy();
-                this.removedIndex = i;
-                break;
+        if (matches.isEmpty()) {
+            ui.printCardNotFound(targetName);
+            return new CommandResult(false, false);
+        }
+
+        int targetIndex;
+        if (matches.size() == 1) {
+            targetIndex = matches.get(0);
+        } else {
+            targetIndex = ui.promptCardSelection(matches, inventory);
+            if (targetIndex == -1) {
+                ui.printRemoveByNameCancelled();
+                return new CommandResult(false, false);
             }
         }
-
-        boolean removed = inventory.removeCardByName(targetName);
-
-        if (removed) {
-            this.isReversible = true;
-            ui.printRemoveByNameSuccess(targetName, inventory);
-            return new CommandResult(false);
-        } else {
-            ui.printCardNotFound(targetName);
-            return new CommandResult(false,false);
-        }
+        this.removedCard = inventory.getCard(targetIndex).copy();
+        this.removedIndex = targetIndex;
+        inventory.removeCardByIndex(targetIndex);
+        this.isReversible = true;
+        ui.printRemoveByNameSuccess(targetName, inventory);
+        return new CommandResult(false);
     }
 
     @Override

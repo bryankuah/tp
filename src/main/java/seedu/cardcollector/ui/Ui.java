@@ -245,7 +245,7 @@ public class Ui {
         printBorder();
         out.println("Card \"" + targetName + "\" removed successfully");
         out.println("You have " + inventory.getSize() + " card(s) left");
-        printBorder();
+        printList(inventory);
     }
 
     public void printCardNotFound(String targetName) {
@@ -783,5 +783,33 @@ public class Ui {
         String listType = list.isWishlist() ? "wishlist" : "inventory";
         out.println("Your " + listType + " has been cleared!");
         printList(list);  // shows empty list message
+    }
+
+    //@@author WeiHeng2003
+    public int promptCardSelection(ArrayList<Integer> indices, CardsList inventory) {
+        printBorder();
+        out.println("Multiple Cards found with that name. Please select one to remove:");
+        for (int i = 0; i < indices.size(); i++) {
+            int cardIndex = indices.get(i);
+            out.println((i + 1) + ". [" + (cardIndex + 1) + "] " + inventory.getCard(cardIndex));
+        }
+        out.println("Enter a number (1 to " + indices.size() + ") or 0 to cancel:");
+        printBorder();
+
+        try {
+            int choice = Integer.parseInt(readInput().trim());
+            if (choice < 1 || choice > indices.size()) {
+                return -1;
+            }
+            return indices.get(choice - 1);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
+    public void printRemoveByNameCancelled() {
+        printBorder();
+        out.println("Cancelling selection. No card was removed.");
+        printBorder();
     }
 }
