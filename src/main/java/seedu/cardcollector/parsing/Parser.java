@@ -369,9 +369,9 @@ public class Parser {
             );
         }
 
-        if (price <= 0) {
+        if (price < 0) {
             throw new ParseInvalidArgumentException(
-                    "Price cannot be negative or equal to 0",
+                    "Price cannot be negative",
                     USAGE_ADD_COMMAND
             );
         }
@@ -783,9 +783,9 @@ public class Parser {
             }
         }
 
-        if (quantity != null && quantity < 0) {
+        if (quantity != null && quantity <= 0) {
             throw new ParseInvalidArgumentException(
-                    "Quantity cannot be negative",
+                    "Quantity cannot be negative or equal 0",
                     USAGE_EDIT_COMMAND
             );
         }
