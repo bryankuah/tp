@@ -75,7 +75,7 @@ Displays cards in the current list in a sorted order.
 
 **Format:** `list [NUMBER | all] [CRITERIA] [ascending | descending]`
 
-- where CRITERIA = `index` | `name` | `quantity` | `price` | `set` | `rarity` | `condition` | `language` | `number` | `note` | `added` | `modified` | `removed`
+- where CRITERIA = `index | name | quantity | price | set | rarity | condition | language | number | note | added | modified | removed`
 
 **Examples:**
 `list`
@@ -83,7 +83,7 @@ Displays cards in the current list in a sorted order.
 `list 50 quantity ascending`
 
 - By default, up to 15 cards is displayed, sorted by index in ascending order. You can change the number of cards to be displayed.
-- Arguments are optional, but if specified, must be in order.
+- Arguments are optional, but if specified, must be in sequential order without skipping any.
 - Argument matching is intentionally fuzzy for fast usage.
 - **Sorting guide**:
   - Except for `index`, `quantity` and `price`, **all** other properties are treated as strings and thus are sorted in case-insensitive lexicographical order.
@@ -101,14 +101,14 @@ Permanently reorders the stored cards in your inventory or wishlist by the chose
 
 **Format:** `reorder CRITERIA [ascending | descending]`
 
-- where CRITERIA = `index` | `name` | `quantity` | `price` | `set` | `rarity` | `condition` | `language` | `number` | `note` | `added` | `modified` | `removed`
+- where CRITERIA = `index | name | quantity | price | set | rarity | condition | language | number | note | added | modified | removed`
 
 **Examples:**
 `reorder price`
 `wishlist reorder name descending`
 
 - By default, the sorting direction is in ascending order.
-- CRITERIA argument must be specified, extra arguments if specified, must be in order.
+- CRITERIA argument must be specified, the extra argument if specified, must be after CRITERIA.
 - Argument matching is intentionally fuzzy for fast usage.
 - Refer to the [sorting guide](#listing-cards-list) under `list` for more information for how the various sorting criterias works.
 
@@ -217,16 +217,19 @@ Displays cards in the current list that have duplicates.
 `wishlist duplicates`
 
 ### Viewing history: `history`
-
-Displays a historical audit log of when cards were added, modified, or removed.
+Display a log of when cards were added, modified, or removed,
+thus serving as an audit log of the cards in each inventory (separate for wishlist).
+- Not to be confused with command history. Cards history do not have a one-to-one correspondence with commands.
+  A single `edit` command may produce multiple entries.
 
 **Format:** `history [NUMBER | all] [added | modified | removed | entire] [ascending | descending]`
 
-- Arguments are optional, but if specified, they must be in order.
+- Arguments are optional, but if specified, must be in sequential order without skipping any.
 - Argument matching is intentionally fuzzy for fast usage.
-- An `added` entry occurs when a new card is added, or when a duplicate card with quantity more than 0 is added, or when the edit command increases the quantity of the card.
-- A `modified` entry occurs when a card value is changed, **excluding** any changes to the quantity of the card.
-- A `removed` entry occurs when a card is removed, or when the edit command decreases the quantity of the card.
+- There are 3 types of history entries:
+  - `added`: when a new card is added, or when a duplicate card with quantity more than 0 is added, or when the edit command increases the quantity of the card.
+  - `modified`: when card value(s) are changed, **excluding any changes to the quantity** of the card.
+  - `removed`: occurs when a card is removed, or when the edit command decreases the quantity of the card.
 - The `undo` command does not revert the history, but rather adds to the history.
   An exception to this, is the undo of the `clear` command which restores the history.
 
@@ -235,6 +238,7 @@ Displays a historical audit log of when cards were added, modified, or removed.
 `history all removed`
 `history 50 added ascending`
 `history 50 a a`
+`wishlist history 50 a a`
 
 ### Using the wishlist: `wishlist`
 
