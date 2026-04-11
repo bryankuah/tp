@@ -412,6 +412,7 @@ public class CardsList {
         if (anyFieldChanged) {
             card.setLastModified(currentInstant);
             history.add(originalCard, card.copy());
+            mergeIfDuplicateAfterEdit(index);
         }
 
         return quantityChanged || anyFieldChanged;
@@ -456,6 +457,33 @@ public class CardsList {
                 && normalized(first.getLanguage()).equals(normalized(second.getLanguage()))
                 && normalized(first.getCardNumber()).equals(normalized(second.getCardNumber()))
                 && normalized(first.getNote()).equals(normalized(second.getNote()));
+    }
+
+    private void mergeIfDuplicateAfterEdit(int editedIndex) {
+        if (editedIndex < 0 || editedIndex >= cards.size()) {
+            return;
+        }
+
+        Card editedCard = cards.get(editedIndex);
+
+        for (int i = 0; i < cards.size(); i++) {
+            if (i == editedIndex) {
+                continue;
+            }
+            Card otherCard = cards.get(i);
+            if (isSameCardVariant(otherCard, editedCard)) {
+                // Merge quantity into the surviving card (reuses existing editCard logic)
+                int updatedQuantity = otherCard.getQuantity() + editedCard.getQuantity();
+                editCard(i, null, Box.of(updatedQuantity), null, null,
+                        null, null, null, null, null);
+
+                // Remove the now-duplicate edited card (history records the removal)
+                removeCardByIndex(editedIndex);
+
+                assert !cards.contains(editedCard) : "Merged duplicate card should have been removed";
+                return; // only merge with the first match
+            }
+        }
     }
 
     private static boolean containsIgnoreCase(String actualValue, String expectedFragment) {
