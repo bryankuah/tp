@@ -389,9 +389,10 @@ If the `lastCommand` was an:
   `EditCommand.undo()` then restores all fields by calling `editCard` with the saved old values:
     ```java
     public CommandResult undo(CommandContext context) {
-    context.getTargetList().restoreCard(targetIndex, originalCard);
-    context.getUi().printUndoSuccess(context.getTargetList());
-    return new CommandResult(false);
+        originalCard.setLastModified(Instant.now());
+        context.getTargetList().restoreCard(targetIndex, originalCard);
+        context.getUi().printUndoSuccess(context.getTargetList());
+        return new CommandResult(false);
     }
     ```
     Note: If an edit command results in no changes, `isReversible` is set to false inside `execute()` and the command is not pushed to `commandHistory`. As a result, calling undo after a no change edit will undo the last actual change instead, which may appear to "skip" the edit entirely.

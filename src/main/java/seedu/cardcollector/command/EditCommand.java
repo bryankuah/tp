@@ -2,6 +2,8 @@ package seedu.cardcollector.command;
 
 import seedu.cardcollector.card.Card;
 
+import java.time.Instant;
+
 public class EditCommand extends Command {
 
     private final int targetIndex;
@@ -59,16 +61,8 @@ public class EditCommand extends Command {
 
     @Override
     public CommandResult undo(CommandContext context) {
-        context.getTargetList().editCard(targetIndex,
-                originalCard.getName(),
-                originalCard.getQuantity(),
-                originalCard.getPrice(),
-                originalCard.getCardSet(),
-                originalCard.getRarity(),
-                originalCard.getCondition(),
-                originalCard.getLanguage(),
-                originalCard.getCardNumber(),
-                originalCard.getNote());
+        originalCard.setLastModified(Instant.now());
+        context.getTargetList().restoreCard(targetIndex, originalCard);
         context.getUi().printUndoSuccess(context.getTargetList());
         return new CommandResult(false);
     }
