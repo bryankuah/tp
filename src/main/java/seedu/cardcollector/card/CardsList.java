@@ -10,7 +10,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Collections;
 import java.util.stream.Collectors;
-import java.util.Objects;
 
 public class CardsList {
     private final ArrayList<Card> cards;
