@@ -363,6 +363,13 @@ public class Parser {
             );
         }
 
+        if (language != null && !language.matches("[a-zA-Z\\s]+")) {
+            throw new ParseInvalidArgumentException(
+                    "Language must contain letters only",
+                    USAGE_ADD_COMMAND
+            );
+        }
+
         if (quantity <= 0) {
             throw new ParseInvalidArgumentException(
                     "Quantity cannot be negative or equal to 0",
@@ -782,6 +789,13 @@ public class Parser {
                         USAGE_EDIT_COMMAND
                 );
             }
+        }
+
+        if (language != null && !language.get().matches("[a-zA-Z\\s]+")) {
+            throw new ParseInvalidArgumentException(
+                    "Language must contain letters only",
+                    USAGE_EDIT_COMMAND
+            );
         }
 
         if (quantity != null && quantity.get() <= 0) {
