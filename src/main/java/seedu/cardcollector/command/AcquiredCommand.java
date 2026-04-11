@@ -3,6 +3,7 @@ package seedu.cardcollector.command;
 import seedu.cardcollector.card.Card;
 import seedu.cardcollector.card.CardsList;
 import seedu.cardcollector.ui.Ui;
+import seedu.cardcollector.util.Box;
 
 import java.util.Locale;
 
@@ -60,7 +61,7 @@ public class AcquiredCommand extends Command {
                 if (newQty <= 0) {
                     inventory.removeCardByIndex(i);
                 } else {
-                    inventory.editCard(i, null, newQty, null,
+                    inventory.editCard(i, null, Box.of(newQty), null,
                             null, null, null, null, null, null);
                 }
                 reversedInventory = true;

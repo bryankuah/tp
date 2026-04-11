@@ -29,6 +29,7 @@ import seedu.cardcollector.card.CardSortCriteria;
 import seedu.cardcollector.exception.ParseBlankCommandException;
 import seedu.cardcollector.exception.ParseInvalidArgumentException;
 import seedu.cardcollector.exception.ParseUnknownCommandException;
+import seedu.cardcollector.util.Box;
 
 import java.util.UUID;
 import java.util.HashMap;
@@ -741,35 +742,35 @@ public class Parser {
 
         String flagArgs = parts.length > 1 ? parts[1] : "";
 
-        String name = null;
-        Integer quantity = null;
-        Float price = null;
-        String cardSet = null;
-        String rarity = null;
-        String condition = null;
-        String language = null;
-        String cardNumber = null;
-        String note = null;
+        Box<String> name = null;
+        Box<Integer> quantity = null;
+        Box<Float> price = null;
+        Box<String> cardSet = null;
+        Box<String> rarity = null;
+        Box<String> condition = null;
+        Box<String> language = null;
+        Box<String> cardNumber = null;
+        Box<String> note = null;
 
         if (!flagArgs.isBlank()) {
             try {
-                name = optionalTextFlag(flagArgs, FLAG_NAME, CARD_FIELD_FLAGS);
-                String quantityText = optionalTextFlag(flagArgs, FLAG_QUANTITY, CARD_FIELD_FLAGS);
+                name = optionalTextFlagBoxed(flagArgs, FLAG_NAME, CARD_FIELD_FLAGS);
+                Box<String> quantityText = optionalTextFlagBoxed(flagArgs, FLAG_QUANTITY, CARD_FIELD_FLAGS);
                 if (quantityText != null) {
-                    quantity = Integer.parseInt(quantityText);
+                    quantity = Box.of(Integer.parseInt(quantityText.get()));
                 }
 
-                String priceText = optionalTextFlag(flagArgs, FLAG_PRICE, CARD_FIELD_FLAGS);
+                Box<String> priceText = optionalTextFlagBoxed(flagArgs, FLAG_PRICE, CARD_FIELD_FLAGS);
                 if (priceText != null) {
-                    price = Float.parseFloat(priceText);
+                    price = Box.of(Float.parseFloat(priceText.get()));
                 }
 
-                cardSet = optionalTextFlag(flagArgs, FLAG_SET, CARD_FIELD_FLAGS);
-                rarity = optionalTextFlag(flagArgs, FLAG_RARITY, CARD_FIELD_FLAGS);
-                condition = optionalTextFlag(flagArgs, FLAG_CONDITION, CARD_FIELD_FLAGS);
-                language = optionalTextFlag(flagArgs, FLAG_LANGUAGE, CARD_FIELD_FLAGS);
-                cardNumber = optionalTextFlag(flagArgs, FLAG_CARD_NUMBER, CARD_FIELD_FLAGS);
-                note = optionalTextFlag(flagArgs, FLAG_NOTE, CARD_FIELD_FLAGS);
+                cardSet = optionalTextFlagBoxed(flagArgs, FLAG_SET, CARD_FIELD_FLAGS);
+                rarity = optionalTextFlagBoxed(flagArgs, FLAG_RARITY, CARD_FIELD_FLAGS);
+                condition = optionalTextFlagBoxed(flagArgs, FLAG_CONDITION, CARD_FIELD_FLAGS);
+                language = optionalTextFlagBoxed(flagArgs, FLAG_LANGUAGE, CARD_FIELD_FLAGS);
+                cardNumber = optionalTextFlagBoxed(flagArgs, FLAG_CARD_NUMBER, CARD_FIELD_FLAGS);
+                note = optionalTextFlagBoxed(flagArgs, FLAG_NOTE, CARD_FIELD_FLAGS);
             } catch (NumberFormatException e) {
                 throw new ParseInvalidArgumentException(
                         "Quantity must be an integer and price must be float",
@@ -783,14 +784,14 @@ public class Parser {
             }
         }
 
-        if (quantity != null && quantity < 0) {
+        if (quantity != null && quantity.get() < 0) {
             throw new ParseInvalidArgumentException(
                     "Quantity cannot be negative",
                     USAGE_EDIT_COMMAND
             );
         }
 
-        if (price != null && price < 0) {
+        if (price != null && price.get() < 0) {
             throw new ParseInvalidArgumentException(
                     "Price cannot be negative",
                     USAGE_EDIT_COMMAND
@@ -857,7 +858,24 @@ public class Parser {
         return value;
     }
 
+    /**
+     * Returns the value of a text flag as a string, or {@code null}
+     * if the flag is not present or is empty.
+     * <p>
+     * This method is a compatibility shim around {@link #optionalTextFlagBoxed}.
+     *
+     * @param input The string input.
+     * @param flag The flag to detect.
+     * @param knownFlags A list all the possible flags in the command.
+     * @return A string, or {@code null} if the flag is not present or is empty.
+     */
     private static String optionalTextFlag(String input, String flag, String[] knownFlags) {
+        Box<String> string = optionalTextFlagBoxed(input, flag, knownFlags);
+
+        return string == null ? null : string.get();
+    }
+
+    private static Box<String> optionalTextFlagBoxed(String input, String flag, String[] knownFlags) {
         int flagIndex = indexOfFlag(input, flag);
         if (flagIndex < 0) {
             return null;
@@ -876,7 +894,7 @@ public class Parser {
         }
 
         String value = input.substring(valueStart, nextFlagIndex).trim();
-        return value.isEmpty() ? null : value;
+        return value.isEmpty() ? null : Box.of(value);
     }
 
     private static int indexOfFlag(String input, String flag) {

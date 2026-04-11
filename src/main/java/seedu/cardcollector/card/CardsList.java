@@ -1,5 +1,7 @@
 package seedu.cardcollector.card;
 
+import seedu.cardcollector.util.Box;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -39,7 +41,7 @@ public class CardsList {
                 // which gracefully handle edge cases,
                 // for example when new card has quantity = 0, which means no change occurred.
                 int updatedQuantity = existingCard.getQuantity() + newCard.getQuantity();
-                editCard(i, null, updatedQuantity, null, null,
+                editCard(i, null, Box.of(updatedQuantity), null, null,
                         null, null, null, null, null);
 
                 assert cards.contains(existingCard) : "Updated card must still be in the list";
@@ -340,9 +342,9 @@ public class CardsList {
         return duplicates;
     }
 
-    public boolean editCard(int index, String newName, Integer newQuantity, Float newPrice,
-                            String newCardSet, String newRarity, String newCondition,
-                            String newLanguage, String newCardNumber, String newNote) {
+    public boolean editCard(int index, Box<String> newName, Box<Integer> newQuantity, Box<Float> newPrice,
+                            Box<String> newCardSet, Box<String> newRarity, Box<String> newCondition,
+                            Box<String> newLanguage, Box<String> newCardNumber, Box<String> newNote) {
         assert index >= 0 && index < cards.size() : "Index should be validated before calling editCard";
 
         Card card = cards.get(index);
@@ -355,15 +357,15 @@ public class CardsList {
             Card originalCard = card.copy();
             int previousQuantity = originalCard.getQuantity();
 
-            if (newQuantity > previousQuantity) {
+            if (newQuantity.get() > previousQuantity) {
                 quantityChanged = true;
-                card.setQuantity(newQuantity);
+                card.setQuantity(newQuantity.get());
 
                 card.setLastAdded(currentInstant);
                 history.add(originalCard, card.copy());
-            } else if (newQuantity < previousQuantity) {
+            } else if (newQuantity.get() < previousQuantity) {
                 quantityChanged = true;
-                card.setQuantity(newQuantity);
+                card.setQuantity(newQuantity.get());
 
                 card.setLastRemoved(currentInstant);
                 history.add(originalCard, card.copy());
@@ -374,41 +376,37 @@ public class CardsList {
         Card originalCard = card.copy();
         boolean anyFieldChanged = false;
 
-        if (newName != null && !newName.isBlank()) {
-            String trimmedNewName = newName.trim();
-            if (!trimmedNewName.equals(card.getName())) {
-                card.setName(trimmedNewName);
-                anyFieldChanged = true;
-            }
-        }
-
-        if (newPrice != null && newPrice != card.getPrice()) {
-            card.setPrice(newPrice);
+        if (isUpdatedValue(card.getName(), newName)) {
+            card.setName(safeTrim(newName.get()));
             anyFieldChanged = true;
         }
-        if (isUpdatedTextValue(newCardSet, card.getCardSet())) {
-            card.setCardSet(trimToNull(newCardSet));
+        if (isUpdatedValue(card.getPrice(), newPrice)) {
+            card.setPrice(newPrice.get());
             anyFieldChanged = true;
         }
-        if (isUpdatedTextValue(newRarity, card.getRarity())) {
-            card.setRarity(trimToNull(newRarity));
+        if (isUpdatedValue(card.getCardSet(), newCardSet)) {
+            card.setCardSet(safeTrim(newCardSet.get()));
             anyFieldChanged = true;
         }
-        if (isUpdatedTextValue(newCondition, card.getCondition())) {
-            card.setCondition(trimToNull(newCondition));
+        if (isUpdatedValue(card.getRarity(), newRarity)) {
+            card.setRarity(safeTrim(newRarity.get()));
             anyFieldChanged = true;
         }
-        if (isUpdatedTextValue(newLanguage, card.getLanguage())) {
-            card.setLanguage(trimToNull(newLanguage));
+        if (isUpdatedValue(card.getCondition(), newCondition)) {
+            card.setCondition(safeTrim(newCondition.get()));
             anyFieldChanged = true;
         }
-        if (isUpdatedTextValue(newCardNumber, card.getCardNumber())) {
-            card.setCardNumber(trimToNull(newCardNumber));
+        if (isUpdatedValue(card.getLanguage(), newLanguage)) {
+            card.setLanguage(safeTrim(newLanguage.get()));
+            anyFieldChanged = true;
+        }
+        if (isUpdatedValue(card.getCardNumber(), newCardNumber)) {
+            card.setCardNumber(safeTrim(newCardNumber.get()));
             anyFieldChanged = true;
         }
 
-        if (isUpdatedTextValue(newNote, card.getNote())) {
-            card.setNote(trimToNull(newNote));
+        if (isUpdatedValue(card.getNote(), newNote)) {
+            card.setNote(safeTrim(newNote.get()));
             anyFieldChanged = true;
         }
 
@@ -478,24 +476,38 @@ public class CardsList {
         return card.hasTag(expectedTag);
     }
 
-    private static boolean isUpdatedTextValue(String candidate, String currentValue) {
-        if (candidate == null) {
+    private static <T> boolean isUpdatedValue(T previous, Box<T> current) {
+        if (current == null) {
             return false;
         }
-        String trimmedCandidate = trimToNull(candidate);
-        return !Objects.equals(trimmedCandidate, currentValue);
+
+        if (previous == null && current.get() == null) {
+            return false;
+        }
+
+        if (previous == null || current.get() == null) {
+            return true;
+        }
+
+        if (previous instanceof String && current.get() instanceof String) {
+            String previousTrimmed = ((String) previous).trim();
+            String currentTrimmed = ((String) current.get()).trim();
+
+            return !previousTrimmed.equals(currentTrimmed);
+        }
+
+        return !previous.equals(current.get());
     }
 
     private static String normalized(String value) {
         return value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
     }
 
-    private static String trimToNull(String value) {
+    private static String safeTrim(String value) {
         if (value == null) {
             return null;
         }
-        String trimmed = value.trim();
-        return trimmed.isEmpty() ? null : trimmed;
+        return value.trim();
     }
 
     private static String normalizeSetName(String setName) {
@@ -533,15 +545,6 @@ public class CardsList {
         }
 
         assert cards.size() > 0 : "List should not be empty if it wasn't before reorder";
-    }
-
-    //@@author WeiHeng2003
-    public void restoreCard(int index, Card card) {
-        assert index >= 0 && index < cards.size() : "Index out of bounds for restore";
-        assert card != null : "Card to restore should not be null";
-        Card current = cards.get(index).copy();
-        cards.set(index, card.copy());
-        this.history.add(current, card.copy());
     }
 
     //@@author WeiHeng2003

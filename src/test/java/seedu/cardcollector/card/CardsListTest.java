@@ -1,6 +1,7 @@
 package seedu.cardcollector.card;
 
 import org.junit.jupiter.api.Test;
+import seedu.cardcollector.util.Box;
 
 import java.util.ArrayList;
 
@@ -153,13 +154,13 @@ public class CardsListTest {
                 .build();
         cardsList.addCard(original);
 
-        cardsList.editCard(0, "Pikachu VMAX", 5, null,
+        cardsList.editCard(0, Box.of("Pikachu VMAX"), Box.of(5), null,
                 null, null, null, null, null, null);
         assertEquals("Pikachu VMAX", cardsList.getCard(0).getName());
         assertEquals(5, cardsList.getCard(0).getQuantity());
         assertEquals(5.50f, cardsList.getCard(0).getPrice());
 
-        cardsList.editCard(0, "Charizard", 10, 25.0f,
+        cardsList.editCard(0, Box.of("Charizard"), Box.of(10), Box.of(25.0f),
                 null, null, null, null, null, null);
         assertEquals("Charizard", cardsList.getCard(0).getName());
         assertEquals(10, cardsList.getCard(0).getQuantity());
@@ -261,8 +262,9 @@ public class CardsListTest {
                 .note("starter")
                 .build());
 
-        boolean changed = cardsList.editCard(
-                0, null, null, null, null, null, null, null, null, "starter deck");
+        boolean changed = cardsList.editCard(0, null, null, null,
+                null, null, null, null,
+                null, Box.of("starter deck"));
 
         assertTrue(changed);
         assertEquals("starter deck", cardsList.getCard(0).getNote());
@@ -570,19 +572,19 @@ public class CardsListTest {
 
         cardsList.removeCardByIndex(1);
 
-        cardsList.editCard(0, "Zero noro", null, null,
+        cardsList.editCard(0, Box.of("Zero noro"), null, null,
                 null, null, null, null, null, null);
 
-        cardsList.editCard(0, null, 5, null,
+        cardsList.editCard(0, null, Box.of(5), null,
                 null, null, null, null, null, null);
 
-        cardsList.editCard(0, null, 4, null,
+        cardsList.editCard(0, null, Box.of(4), null,
                 null, null, null, null, null, null);
 
-        cardsList.editCard(0, null, 4, null,
+        cardsList.editCard(0, null, Box.of(4), null,
                 null, null, null, null, null, null);
 
-        cardsList.editCard(0, null, 3, 9.99f,
+        cardsList.editCard(0, null, Box.of(3), Box.of(9.99f),
                 null, null, null, null, null, null);
 
         CardsHistory history = cardsList.getHistory();
@@ -671,8 +673,9 @@ public class CardsListTest {
                 .quantity(1)
                 .build());
 
-        boolean changed = cardsList.editCard(
-                0, null, null, null, null, null, null, null, null, "new note");
+        boolean changed = cardsList.editCard(0, null, null,
+                null, null, null, null,
+                null, null, Box.of("new note"));
 
         assertTrue(changed);
         assertEquals("new note", cardsList.getCard(0).getNote());
@@ -689,8 +692,9 @@ public class CardsListTest {
                 .note("starter")
                 .build());
 
-        boolean changed = cardsList.editCard(
-                0, null, null, null, null, null, null, null, null, "starter");
+        boolean changed = cardsList.editCard(0, null, null,
+                null, null, null, null,
+                null, null, Box.of("starter"));
 
         assertFalse(changed);
     }
@@ -706,8 +710,9 @@ public class CardsListTest {
                 .note("water type")
                 .build());
 
-        boolean changed = cardsList.editCard(
-                0, null, null, null, null, null, null, null, null, "");
+        boolean changed = cardsList.editCard(0, null, null,
+                null, null, null, null,
+                null, null, Box.of(null));
 
         assertTrue(changed);
         assertEquals(null, cardsList.getCard(0).getNote());

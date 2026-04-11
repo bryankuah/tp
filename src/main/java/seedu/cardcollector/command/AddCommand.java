@@ -1,6 +1,8 @@
 package seedu.cardcollector.command;
 
 import seedu.cardcollector.card.Card;
+import seedu.cardcollector.util.Box;
+
 import java.util.UUID;
 
 public class AddCommand extends Command {
@@ -53,7 +55,7 @@ public class AddCommand extends Command {
                 this.addedIndex = i;
 
                 int newQuantity = existing.getQuantity() + quantity;
-                inventory.editCard(i, null, newQuantity, null,
+                inventory.editCard(i, null, Box.of(newQuantity), null,
                         null, null, null, null, null, null);
                 break;
             }
@@ -87,7 +89,7 @@ public class AddCommand extends Command {
         if (wasMerged) {
             Card existing = inventory.getCard(addedIndex);
             int restoredQuantity = existing.getQuantity() - quantity;
-            inventory.editCard(addedIndex, null, restoredQuantity, null,
+            inventory.editCard(addedIndex, null, Box.of(restoredQuantity), null,
                     null, null, null, null, null, null);
         } else {
             inventory.removeCardByIndex(addedIndex);

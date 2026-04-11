@@ -1,27 +1,26 @@
 package seedu.cardcollector.command;
 
 import seedu.cardcollector.card.Card;
-
-import java.time.Instant;
+import seedu.cardcollector.util.Box;
 
 public class EditCommand extends Command {
 
     private final int targetIndex;
-    private final String newName;
-    private final Integer newQuantity;
-    private final Float newPrice;
-    private final String newCardSet;
-    private final String newRarity;
-    private final String newCondition;
-    private final String newLanguage;
-    private final String newCardNumber;
-    private final String newNote;
+    private final Box<String> newName;
+    private final Box<Integer> newQuantity;
+    private final Box<Float> newPrice;
+    private final Box<String> newCardSet;
+    private final Box<String> newRarity;
+    private final Box<String> newCondition;
+    private final Box<String> newLanguage;
+    private final Box<String> newCardNumber;
+    private final Box<String> newNote;
 
     private Card originalCard;
 
-    public EditCommand(int targetIndex, String newName, Integer newQuantity, Float newPrice,
-                       String newCardSet, String newRarity, String newCondition,
-                       String newLanguage, String newCardNumber, String newNote) {
+    public EditCommand(int targetIndex, Box<String> newName, Box<Integer> newQuantity, Box<Float> newPrice,
+                       Box<String> newCardSet, Box<String> newRarity, Box<String> newCondition,
+                       Box<String> newLanguage, Box<String> newCardNumber, Box<String> newNote) {
         this.targetIndex = targetIndex;
         this.newName = newName;
         this.newQuantity = newQuantity;
@@ -61,8 +60,16 @@ public class EditCommand extends Command {
 
     @Override
     public CommandResult undo(CommandContext context) {
-        originalCard.setLastModified(Instant.now());
-        context.getTargetList().restoreCard(targetIndex, originalCard);
+        context.getTargetList().editCard(targetIndex,
+                Box.of(originalCard.getName()),
+                Box.of(originalCard.getQuantity()),
+                Box.of(originalCard.getPrice()),
+                Box.of(originalCard.getCardSet()),
+                Box.of(originalCard.getRarity()),
+                Box.of(originalCard.getCondition()),
+                Box.of(originalCard.getLanguage()),
+                Box.of(originalCard.getCardNumber()),
+                Box.of(originalCard.getNote()));
         context.getUi().printUndoSuccess(context.getTargetList());
         return new CommandResult(false);
     }

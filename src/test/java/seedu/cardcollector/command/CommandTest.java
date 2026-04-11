@@ -7,6 +7,7 @@ import seedu.cardcollector.card.CardHistoryEntry;
 import seedu.cardcollector.card.CardHistoryType;
 import seedu.cardcollector.card.CardsHistory;
 import seedu.cardcollector.card.CardsList;
+import seedu.cardcollector.util.Box;
 
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -205,21 +206,27 @@ public class CommandTest {
         addCommand.execute(commandContext);
         commandContext.getCommandHistory().push(addCommand);
 
-        Command editCommandIncreaseQuantity = new EditCommand(0, null, 8,
+        Command editCommandIncreaseQuantity = new EditCommand(0, null, Box.of(8),
                 null, null, null, null, null, null, null);
         editCommandIncreaseQuantity.execute(commandContext);
         commandContext.getCommandHistory().push(editCommandIncreaseQuantity);
 
-        Command editCommandDecreaseQuantity = new EditCommand(0, null, 2,
+        Command editCommandDecreaseQuantity = new EditCommand(0, null, Box.of(2),
                 null, null, null, null, null, null, null);
         editCommandDecreaseQuantity.execute(commandContext);
         commandContext.getCommandHistory().push(editCommandDecreaseQuantity);
 
-        Command editCommandChangeName = new EditCommand(0, "MyNamedCard", null,
+        Command editCommandChangeName = new EditCommand(0, Box.of("MyNamedCard"), null,
                 null, null, null, null, null, null, null);
         editCommandChangeName.execute(commandContext);
         commandContext.getCommandHistory().push(editCommandChangeName);
 
+        Command editCommandChangeSet = new EditCommand(0, null, null,
+                null, Box.of("newCard set"), null, null, null, null, null);
+        editCommandChangeSet.execute(commandContext);
+        commandContext.getCommandHistory().push(editCommandChangeSet);
+
+        new UndoCommand().execute(commandContext);
         new UndoCommand().execute(commandContext);
         new UndoCommand().execute(commandContext);
         new UndoCommand().execute(commandContext);
@@ -228,7 +235,12 @@ public class CommandTest {
         CardsHistory history = commandContext.getInventory().getHistory();
         ArrayList<CardHistoryEntry> historyList = history.getSortedHistoryList(false);
 
-        assertEquals(8, historyList.size());
+        assertEquals(10, historyList.size());
+        System.out.println(historyList.get(9).getChangedQuantity());
+        assertEquals(CardHistoryType.ADDED, historyList.get(0).getCardHistoryType());
+        assertEquals(CardHistoryType.MODIFIED, historyList.get(4).getCardHistoryType());
+        assertEquals(CardHistoryType.MODIFIED, historyList.get(5).getCardHistoryType());
+        assertEquals(CardHistoryType.REMOVED, historyList.get(9).getCardHistoryType());
     }
 
     //@@author WeiHeng2003
@@ -341,8 +353,9 @@ public class CommandTest {
                 null, null, null, null, null, "old note");
         addCommand.execute(commandContext);
 
-        Command editCommand = new EditCommand(0, null, null, null,
-                null, null, null, null, null, "new note");
+        Command editCommand = new EditCommand(0, null,
+                null, null, null, null, null,
+                null, null, Box.of("new note"));
         editCommand.execute(commandContext);
 
         assertEquals("new note", commandContext.getInventory().getCard(0).getNote());
@@ -357,8 +370,9 @@ public class CommandTest {
         addCommand.execute(commandContext);
         commandContext.getCommandHistory().push(addCommand);
 
-        Command editCommand = new EditCommand(0, null, null, null,
-                null, null, null, null, null, "new note");
+        Command editCommand = new EditCommand(0, null, null,
+                null, null, null,
+                null, null, null, Box.of("new note"));
         editCommand.execute(commandContext);
         commandContext.getCommandHistory().push(editCommand);
 
@@ -439,8 +453,9 @@ public class CommandTest {
     public void execute_editInvalidIndex_noChange() {
         CommandContext commandContext = createCommandContext();
 
-        Command editCommand = new EditCommand(0, "NewName", null, null,
-                null, null, null, null, null, null);
+        Command editCommand = new EditCommand(0, Box.of("NewName"), null,
+                null, null, null, null,
+                null, null, null);
 
         editCommand.execute(commandContext);
 
