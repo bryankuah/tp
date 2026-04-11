@@ -191,11 +191,29 @@ Removes a card by its displayed position.
 
 ### Removing a card by name: `removename`
 
-Removes the first exact case-insensitive name match.
+Removes the exact case-insensitive name match.
+If multiple cards are found with the same name, the user will be prompt to select the index to remove.
 
 **Format:** `removename NAME`
 
 **Example:** `removename Pikachu`
+
+**Example with same name:**  
+```
+_______________________________________________________
+Here is your card list!
+1. A | Quantity: 1 | Price: 5.5
+2. B | Quantity: 2 | Price: 10.0
+3. A | Quantity: 3 | Price: 2.0
+_______________________________________________________
+removename a
+_______________________________________________________
+Multiple Cards found with that name. Please select one to remove:
+1. [1] A | Quantity: 1 | Price: 5.5
+2. [3] A | Quantity: 3 | Price: 2.0
+Enter a number (1 to 2) or 0 to cancel:
+_______________________________________________________
+```
 
 ### Undoing the most recent change: `undo`
 
