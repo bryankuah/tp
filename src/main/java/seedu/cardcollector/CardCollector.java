@@ -48,7 +48,7 @@ public class CardCollector {
             if (input.toLowerCase().startsWith("wishlist ")) {
                 isWishlistCommand = true;
                 parseInput = input.substring(9).trim();
-            } else if(input.equalsIgnoreCase("wishlist")) {
+            } else if (input.equalsIgnoreCase("wishlist")) {
                 // Handles "wishlist" without any subsequent command
                 ui.printInvalidArgumentWarning("Wishlist must be followed by a valid command",
                         new String[] {"wishlist COMMAND"});
