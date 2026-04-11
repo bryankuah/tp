@@ -8,6 +8,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Collections;
 import java.util.stream.Collectors;
+import java.util.Objects;
 
 public class CardsList {
     private final ArrayList<Card> cards;
@@ -481,7 +482,8 @@ public class CardsList {
         if (candidate == null) {
             return false;
         }
-        return !normalized(candidate).equals(normalized(currentValue));
+        String trimmedCandidate = trimToNull(candidate);
+        return !Objects.equals(trimmedCandidate, currentValue);
     }
 
     private static String normalized(String value) {
